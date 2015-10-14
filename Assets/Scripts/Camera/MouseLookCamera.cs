@@ -39,7 +39,7 @@ public class MouseLookCamera : MonoBehaviour
             //Zoom
             if (Input.GetAxis("Mouse ScrollWheel") > 0) //forwards
             {
-                if(distance > -3.5f)
+                if(distance > minDistance)
                 {
                     distance -= 0.5f;
                 }
