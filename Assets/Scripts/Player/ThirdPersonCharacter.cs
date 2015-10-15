@@ -4,6 +4,7 @@ using System.Collections;
 [RequireComponent(typeof(Rigidbody))]
 public class ThirdPersonCharacter : MonoBehaviour {
 
+	public Transform jumpCheckLinecast;
     public float movingTurnSpeed = 360.0f;
     public float stationaryTurnSpeed = 180.0f;
     public float groundJumpPower = 12.0f;
@@ -19,6 +20,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
     private Vector3 groundNormal;
     private Vector3 prevVelocity;
     private float origGroundCheckDistance;
+	private float origGravityMultiplier;
     private float dashTimer;
     private int numberOfAirJumps;
     private bool isGrounded;
@@ -30,6 +32,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
         rb = GetComponent<Rigidbody>();
         rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
         origGroundCheckDistance = groundCheckDistance;
+		origGravityMultiplier = gravityMultiplier;
     }
 	
 	public void Move(Vector3 move, bool jump)
@@ -72,6 +75,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
         {
             if(numberOfAirJumps < maxNumberOfAirJumps && !isDashing)
             {
+				isDodging = false;
                 Dash(move);
             }
         }
@@ -92,7 +96,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
         }
     }
 
-    //used in the air, consumes a jump
+    //used when dodging in the air, consumes a jump
     private void Dash(Vector3 move)
     {
         isDashing = true;
@@ -107,7 +111,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
         move = Vector3.ProjectOnPlane(move, groundNormal);
         move *= moveSpeedMultiplier;
 
-        rb.velocity = new Vector3(move.x * dashSpeedMultiplier, airJumpPower / 3.0f, move.z * dashSpeedMultiplier);
+        rb.velocity = new Vector3(move.x * dashSpeedMultiplier, 1.0f, move.z * dashSpeedMultiplier);
         rb.useGravity = false;
 
         numberOfAirJumps++;
@@ -144,6 +148,8 @@ public class ThirdPersonCharacter : MonoBehaviour {
 
     private void CheckGroundStatus()
     {
+		//Raycast version adapted from standard assets, doesn't work half the time...
+        /*
         RaycastHit hitInfo;
 #if UNITY_EDITOR
         Debug.DrawLine(transform.position, transform.position + (Vector3.up * 0.1f) + (Vector3.down * groundCheckDistance));
@@ -161,6 +167,20 @@ public class ThirdPersonCharacter : MonoBehaviour {
             isGrounded = false;
             groundNormal = Vector3.up;
         }
+        */
+
+		//Linecast version because I'm dumb
+		//This means we won't get the ground's normals, so slopes will be dumb but whatever
+#if UNITY_EDITOR
+		Debug.DrawLine(transform.position, jumpCheckLinecast.position);
+#endif
+
+		isGrounded = Physics.Linecast (transform.position, jumpCheckLinecast.position);
+
+		if (isGrounded) {
+			isDodging = false;
+			numberOfAirJumps = 0;
+		}
     }
 
     private void Update()
