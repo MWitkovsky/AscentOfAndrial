@@ -17,13 +17,17 @@ public class ThirdPersonCharacter : MonoBehaviour {
     public int maxNumberOfAirJumps = 3;
 
     private Rigidbody rb;
+    private Animator anim;
+    private AnimatorStateInfo animInfo; //For later use, used for polling which anim state we're in to restrict controls
     private Vector3 groundNormal;
     private Vector3 prevVelocity;
     private float origGroundCheckDistance;
 	private float origGravityMultiplier;
     private float dashTimer;
+    private float jumpTimer;
+    private float landAnimDelay; //jumping off ground is broken because of multiple triggers on same frame, this fixes that
     private int numberOfAirJumps;
-    private bool isGrounded;
+    public bool isGrounded;
     private bool isDodging;
     private bool isDashing;
 
@@ -33,11 +37,19 @@ public class ThirdPersonCharacter : MonoBehaviour {
         rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
         origGroundCheckDistance = groundCheckDistance;
 		origGravityMultiplier = gravityMultiplier;
+
+        landAnimDelay = 0.05f;
+
+        anim = GetComponent<Animator>();
     }
 	
 	public void Move(Vector3 move, bool jump)
     {
-        CheckGroundStatus();
+        if (!jump)
+        {
+            CheckGroundStatus(jump);
+        }
+        
         if (!isDodging && !isDashing)
         {
             if (move.magnitude > 1.0f)
@@ -123,9 +135,12 @@ public class ThirdPersonCharacter : MonoBehaviour {
         if (jump && isGrounded)
         {
             // jump!
+            anim.SetTrigger("Jump");
+            jumpTimer =landAnimDelay;
+
             rb.velocity = new Vector3(rb.velocity.x, groundJumpPower, rb.velocity.z);
             isGrounded = false;
-            groundCheckDistance = 0.5f;
+            groundCheckDistance = rb.velocity.y < 0 ? origGroundCheckDistance : 0.01f;
         }
     }
 
@@ -139,6 +154,9 @@ public class ThirdPersonCharacter : MonoBehaviour {
 
         if (jump && numberOfAirJumps < maxNumberOfAirJumps)
         {
+            anim.SetTrigger("Jump");
+            jumpTimer = landAnimDelay;
+
             numberOfAirJumps++;
             rb.velocity = new Vector3(rb.velocity.x, airJumpPower, rb.velocity.z);
         }
@@ -146,10 +164,9 @@ public class ThirdPersonCharacter : MonoBehaviour {
         groundCheckDistance = rb.velocity.y < 0 ? origGroundCheckDistance : 0.01f;
     }
 
-    private void CheckGroundStatus()
+    private void CheckGroundStatus(bool jump)
     {
-		//Raycast version adapted from standard assets, doesn't work half the time...
-        /*
+        //Raycast version adapted from standard assets, doesn't work half the time...
         RaycastHit hitInfo;
 #if UNITY_EDITOR
         Debug.DrawLine(transform.position, transform.position + (Vector3.up * 0.1f) + (Vector3.down * groundCheckDistance));
@@ -157,18 +174,24 @@ public class ThirdPersonCharacter : MonoBehaviour {
 
         if(Physics.Raycast(transform.position, Vector3.down, out hitInfo, groundCheckDistance))
         {
-            groundNormal = hitInfo.normal;
-            isGrounded = true;
-            isDodging = false;
-            numberOfAirJumps = 0;
+            if (!jump && groundCheckDistance == origGroundCheckDistance)
+            {
+                anim.SetTrigger("Land");
+                groundNormal = hitInfo.normal;
+                isGrounded = true;
+                isDodging = false;
+                numberOfAirJumps = 0;
+            }
         }
         else
         {
             isGrounded = false;
             groundNormal = Vector3.up;
         }
-        */
 
+        anim.SetBool("isGrounded", isGrounded);
+
+        /*
 		//Linecast version because I'm dumb
 		//This means we won't get the ground's normals, so slopes will be dumb but whatever
 #if UNITY_EDITOR
@@ -177,11 +200,14 @@ public class ThirdPersonCharacter : MonoBehaviour {
 
 		isGrounded = Physics.Linecast (transform.position, jumpCheckLinecast.position);
 
-		if (isGrounded) {
-			isDodging = false;
+		if (isGrounded && rb.velocity.y < 0.0f) {
+            anim.SetTrigger("Land");
+            isDodging = false;
 			numberOfAirJumps = 0;
 		}
+        */
     }
+
 
     private void Update()
     {
@@ -191,5 +217,9 @@ public class ThirdPersonCharacter : MonoBehaviour {
             isDashing = false;
             rb.useGravity = true;
         }
+
+        jumpTimer -= Time.deltaTime;
+        anim.SetFloat("jumpTimer", jumpTimer);
     }
+
 }
