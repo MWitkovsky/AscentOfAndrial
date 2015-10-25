@@ -57,6 +57,8 @@ public class ThirdPersonCharacter : MonoBehaviour {
                 move.Normalize();
             }
 
+            anim.SetFloat("moveSpeed", move.magnitude);
+				
             move = transform.InverseTransformDirection(move);
             move = Vector3.ProjectOnPlane(move, groundNormal);
 
@@ -98,11 +100,13 @@ public class ThirdPersonCharacter : MonoBehaviour {
             if (move.magnitude > 1.0f)
             {
                 move.Normalize();
+
             }
 
             move = transform.InverseTransformDirection(move);
             move = Vector3.ProjectOnPlane(move, groundNormal);
             move *= moveSpeedMultiplier;
+            jumpTimer = landAnimDelay;
 
             rb.velocity = new Vector3(move.x*2.0f, airJumpPower/3.0f, move.z*2.0f);
         }
@@ -125,6 +129,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
 
         rb.velocity = new Vector3(move.x * dashSpeedMultiplier, 1.0f, move.z * dashSpeedMultiplier);
         rb.useGravity = false;
+        jumpTimer = landAnimDelay;
 
         numberOfAirJumps++;
     }
@@ -176,7 +181,6 @@ public class ThirdPersonCharacter : MonoBehaviour {
         {
             if (!jump && groundCheckDistance == origGroundCheckDistance)
             {
-                anim.SetTrigger("Land");
                 groundNormal = hitInfo.normal;
                 isGrounded = true;
                 isDodging = false;
