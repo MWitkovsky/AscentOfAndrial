@@ -71,6 +71,7 @@ ModelImporter:
     7400000: Default Take
     7400002: Idle
     7400004: SingleJump
+    7400006: Running
     9500000: //RootNode
     13700000: Cylinder
     13700002: Cylinder_001

@@ -57,6 +57,15 @@ public class ThirdPersonCharacter : MonoBehaviour {
                 move.Normalize();
             }
 
+			if (move.magnitude > 0.0f)
+			{
+				anim.SetBool("isMoving", true);
+			}
+
+			else
+				anim.SetBool("isMoving", false);
+
+
             move = transform.InverseTransformDirection(move);
             move = Vector3.ProjectOnPlane(move, groundNormal);
 
@@ -98,6 +107,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
             if (move.magnitude > 1.0f)
             {
                 move.Normalize();
+
             }
 
             move = transform.InverseTransformDirection(move);
