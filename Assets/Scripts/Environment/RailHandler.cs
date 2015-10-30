@@ -33,6 +33,14 @@ public class RailHandler : MonoBehaviour {
             player = other.GetComponent<ThirdPersonCharacter>();
             playerRB = other.GetComponent<Rigidbody>();
 
+			float positionOffset = this.transform.localPosition.x - playerRB.transform.localPosition.x;
+
+			if(positionOffset > 0.2)
+				playerRB.transform.Translate(-positionOffset, 0.0f, 0.0f);
+
+			else if(positionOffset < 0.2)
+				playerRB.transform.Translate(positionOffset, 0.0f, 0.0f);
+
             if (Vector3.Dot(other.GetComponent<ThirdPersonUserControl>().characterModel.forward.normalized, grindVelocity) >= 0)
             {
                 grindVelocity *= player.moveSpeedMultiplier;
