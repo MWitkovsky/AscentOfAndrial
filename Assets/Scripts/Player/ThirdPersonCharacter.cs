@@ -4,7 +4,6 @@ using System.Collections;
 [RequireComponent(typeof(Rigidbody))]
 public class ThirdPersonCharacter : MonoBehaviour {
 
-	public Transform jumpCheckLinecast;
     public float movingTurnSpeed = 360.0f;
     public float stationaryTurnSpeed = 180.0f;
     public float groundJumpPower = 12.0f;
@@ -27,9 +26,10 @@ public class ThirdPersonCharacter : MonoBehaviour {
     private float jumpTimer;
     private float landAnimDelay; //jumping off ground is broken because of multiple triggers on same frame, this fixes that
     private int numberOfAirJumps;
-    public bool isGrounded;
+    private bool isGrounded;
     private bool isDodging;
     private bool isDashing;
+    private bool isGrinding;
 
     // Use this for initialization
     void Start () {
@@ -45,6 +45,12 @@ public class ThirdPersonCharacter : MonoBehaviour {
 	
 	public void Move(Vector3 move, bool jump)
     {
+        if (isGrinding)
+        {
+            HandleGrindingMovement(jump);
+            return;
+        }
+
         if (!jump)
         {
             CheckGroundStatus(jump);
@@ -169,6 +175,11 @@ public class ThirdPersonCharacter : MonoBehaviour {
         groundCheckDistance = rb.velocity.y < 0 ? origGroundCheckDistance : 0.01f;
     }
 
+    private void HandleGrindingMovement(bool jump)
+    {
+        HandleGroundedMovement(jump);
+    }
+
     private void CheckGroundStatus(bool jump)
     {
         //Raycast version adapted from standard assets, doesn't work half the time...
@@ -219,11 +230,30 @@ public class ThirdPersonCharacter : MonoBehaviour {
         if(dashTimer > dashTime)
         {
             isDashing = false;
-            rb.useGravity = true;
+            if (!isGrinding)
+            {
+                rb.useGravity = true;
+            }
         }
 
         jumpTimer -= Time.deltaTime;
         anim.SetFloat("jumpTimer", jumpTimer);
     }
 
+
+    public void SetGrinding(bool isGrinding)
+    {
+        this.isGrinding = isGrinding;
+        if (isGrinding)
+        {
+            isGrounded = true;
+            isDodging = false;
+            numberOfAirJumps = 0;
+        }
+    }
+
+    public float getJumpTimer()
+    {
+        return jumpTimer;
+    }
 }
