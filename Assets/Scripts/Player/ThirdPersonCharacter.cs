@@ -244,6 +244,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
     public void SetGrinding(bool isGrinding)
     {
         this.isGrinding = isGrinding;
+		anim.SetBool("isGrinding", isGrinding);
         if (isGrinding)
         {
             isGrounded = true;
