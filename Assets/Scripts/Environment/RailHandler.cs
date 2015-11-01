@@ -11,6 +11,9 @@ public class RailHandler : MonoBehaviour {
     private Vector3 grindVelocity;
     private bool wasReverse;
 
+	private Vector3 beginTemp;
+	private Vector3 endTemp;
+
     void Start()
     {
         grindVelocity = (destination.position - origin.position).normalized;
@@ -33,29 +36,30 @@ public class RailHandler : MonoBehaviour {
             player = other.GetComponent<ThirdPersonCharacter>();
             playerRB = other.GetComponent<Rigidbody>();
 
-			float positionOffset = this.transform.position.x - playerRB.transform.position.x;
+
+			//Semi-elegant method.
+			//BinarySearch(playerRB.transform.position);
+
+			/* The brute-force method.
 			float rotationalOffset = this.transform.rotation.y - playerRB.transform.rotation.y;
 
-			Debug.Log(positionOffset);
 
-			
-			if(rotationalOffset > 0.2f)
-				playerRB.transform.Translate(0.0f, -rotationalOffset, 0.0f);
-			
-			else if(rotationalOffset < 0.2f)
-				playerRB.transform.Translate(0.0f, rotationalOffset, 0.0f);
+			Debug.Log("Global: " + this.GetComponent<BoxCollider>().transform.position.x);
+			Debug.Log("Local: " + this.GetComponent<BoxCollider>().transform.localPosition.x);
 
-			Debug.Log(rotationalOffset);
-			Debug.Log(playerRB.transform.rotation.y);
-			if(Mathf.Abs(rotationalOffset) < 0.01)
-			{
-				Debug.Log("Center");
-				if(positionOffset > 0)
-					playerRB.transform.Translate(-positionOffset, 0.0f, 0.0f);
+			Debug.Log("Global Player: " + playerRB.transform.position.x);
+			Debug.Log("Local Player: " + playerRB.transform.localPosition.x);
 
-				else if(positionOffset < 0)
-					playerRB.transform.Translate(positionOffset, 0.0f, 0.0f);
-			}
+			if(rotationalOffset != 0)
+				playerRB.transform.rotation.Set(playerRB.transform.rotation.x, this.transform.rotation.y, playerRB.transform.rotation.z, playerRB.transform.rotation.w); 
+	
+
+				if(positionOffset != 0)
+				{
+					float correctedX = positionOffset > 0 ? this.GetComponent<BoxCollider>().transform.position.x - 0.5f : this.GetComponent<BoxCollider>().transform.position.x + 0.5f;
+					playerRB.transform.position.Set(correctedX, playerRB.transform.position.y, playerRB.transform.position.z);
+				}
+*/
             if (Vector3.Dot(other.GetComponent<ThirdPersonUserControl>().characterModel.forward.normalized, grindVelocity) >= 0)
             {
                 grindVelocity *= player.moveSpeedMultiplier;
@@ -92,4 +96,41 @@ public class RailHandler : MonoBehaviour {
             playerRB = null;
         }
     }
+
+	void BinarySearch(Vector3 position)
+	{
+		bool match = false;
+
+		beginTemp = origin.position;
+		endTemp = destination.position;
+		float positionOffset = 1.0f;
+		if(!match)
+		{
+			Vector3 mid = new Vector3((beginTemp.x + endTemp.x)/2 ,0.0f, (beginTemp.z + endTemp.z)/2);
+			if((position.x >= mid.x - positionOffset && position.x <=  mid.x + positionOffset) 
+			   && (position.z >= mid.z - positionOffset && position.x <=  mid.z + positionOffset))
+			{
+				match = true; //In the words of a Witkovsky, "Snap!!"
+				Debug.Log(match);
+			}
+
+			else
+			{
+				if((position.x >= mid.x - positionOffset && position.x <=  endTemp.x + positionOffset) 
+					&& (position.z >= mid.z - positionOffset && position.x <=  endTemp.z + positionOffset))
+				{
+					beginTemp = mid;
+				}
+
+				else
+					endTemp = mid;
+			}
+
+
+		}
+				
+
+
+
+	}
 }
