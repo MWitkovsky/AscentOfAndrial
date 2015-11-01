@@ -13,6 +13,7 @@ public class RailHandler : MonoBehaviour {
 
 	private Vector3 beginTemp;
 	private Vector3 endTemp;
+	private Vector3 mid;
 
     void Start()
     {
@@ -38,7 +39,7 @@ public class RailHandler : MonoBehaviour {
 
 
 			//Semi-elegant method.
-			//BinarySearch(playerRB.transform.position);
+			BinarySearch(playerRB.transform.position);
 
 			/* The brute-force method.
 			float rotationalOffset = this.transform.rotation.y - playerRB.transform.rotation.y;
@@ -104,33 +105,62 @@ public class RailHandler : MonoBehaviour {
 		beginTemp = origin.position;
 		endTemp = destination.position;
 		float positionOffset = 1.0f;
-		if(!match)
+		int count = 0;
+		while(!match)
 		{
-			Vector3 mid = new Vector3((beginTemp.x + endTemp.x)/2 ,0.0f, (beginTemp.z + endTemp.z)/2);
-			if((position.x >= mid.x - positionOffset && position.x <=  mid.x + positionOffset) 
-			   && (position.z >= mid.z - positionOffset && position.x <=  mid.z + positionOffset))
+			//safeguard so game doesn't crash in some strange fringe case
+			if(count > 50){
+				break;
+			}
+			Vector3 mid = new Vector3((beginTemp.x + endTemp.x)/2.0f , (beginTemp.y + endTemp.y)/2.0f, (beginTemp.z + endTemp.z)/2.0f);
+
+			if(isBetween(position.x, mid.x - positionOffset, mid.x + positionOffset)
+			   && isBetween(position.z, mid.z - positionOffset, mid.z + positionOffset))
 			{
 				match = true; //In the words of a Witkovsky, "Snap!!"
-				Debug.Log(match);
+				//1.6f is half andrial's height
+				playerRB.gameObject.transform.position = new Vector3(mid.x, mid.y+1.6f, mid.z);
 			}
-
 			else
 			{
-				if((position.x >= mid.x - positionOffset && position.x <=  endTemp.x + positionOffset) 
-					&& (position.z >= mid.z - positionOffset && position.x <=  endTemp.z + positionOffset))
+				if(isBetween(position.x, mid.x, endTemp.x)
+				   && isBetween(position.z, mid.z, endTemp.z))
 				{
 					beginTemp = mid;
 				}
-
 				else
+				{
 					endTemp = mid;
+				}
 			}
-
-
+			count++;
 		}
-				
+	}
 
+	//Checks if a is between b and c
+	bool isBetween(float a, float b, float c)
+	{
+		if (b < c) {
+			if (a >= b && a <= c) 
+			{
+				return true;
+			}
+		}
+		else
+		{
+			if (a >= c && a <= b)
+			{
+				return true;
+			}
+		}
 
+		//strange bugs happened because of floating point errors, this is a catch
+		//this also fixes the logical bug of a rail perfectly on the X or Z axis
+		if (b >= c-0.1f && b <= c+0.1f) 
+		{
+			return true;
+		}
 
+		return false;
 	}
 }
