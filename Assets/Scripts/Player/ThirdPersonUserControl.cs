@@ -107,8 +107,8 @@ public class ThirdPersonUserControl : MonoBehaviour {
             move = v * Vector3.forward + h * Vector3.right;
         }
 
-        //Set player's rotation if moving
-        if (h != 0.0f || v != 0.0f)
+        //Set player's rotation if moving and not on some sort of on-rails thing
+        if ((h != 0.0f || v != 0.0f) && !character.IsGrinding())
         {
             characterRotation = cam.transform.rotation;
             characterRotation.x = 0;

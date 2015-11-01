@@ -240,6 +240,10 @@ public class ThirdPersonCharacter : MonoBehaviour {
         anim.SetFloat("jumpTimer", jumpTimer);
     }
 
+    public bool IsGrinding()
+    {
+        return isGrinding;
+    }
 
     public void SetGrinding(bool isGrinding)
     {
@@ -253,7 +257,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
         }
     }
 
-    public float getJumpTimer()
+    public float GetJumpTimer()
     {
         return jumpTimer;
     }
