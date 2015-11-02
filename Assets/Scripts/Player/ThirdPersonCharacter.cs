@@ -77,18 +77,18 @@ public class ThirdPersonCharacter : MonoBehaviour {
             move = transform.InverseTransformDirection(move);
             move = Vector3.ProjectOnPlane(move, groundNormal);
 
+            move *= moveSpeedMultiplier;
+
             if (isGrounded)
             {
                 HandleGroundedMovement(jump);
+                rb.velocity = new Vector3(move.x, rb.velocity.y, move.z);
             }
             else
             {
                 HandleAirborneMovement(jump);
+                rb.velocity = new Vector3(move.x, rb.velocity.y, move.z);
             }
-
-            move *= moveSpeedMultiplier;
-
-            rb.velocity = new Vector3(move.x, rb.velocity.y, move.z);
         }
         if (jump && isDodging)
         {
@@ -155,7 +155,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
 		rb.velocity = new Vector3(move.x * dashSpeedMultiplier, 1.0f, move.z * dashSpeedMultiplier);
 
 		anim.SetFloat("moveZ", dashDir);
-		Debug.Log(dashDir);
+        anim.SetBool("isDashing", isDashing);
 		rb.useGravity = false;
         jumpTimer = landAnimDelay;
 
@@ -165,7 +165,6 @@ public class ThirdPersonCharacter : MonoBehaviour {
     public void AirAttack()
     {
         attackRadius.enabled = true;
-        //anim.SetTrigger("AirAttack");
     }
 
     private void HandleGroundedMovement(bool jump)
@@ -212,9 +211,6 @@ public class ThirdPersonCharacter : MonoBehaviour {
     {
         //Raycast version adapted from standard assets, doesn't work half the time...
         RaycastHit hitInfo;
-#if UNITY_EDITOR
-        Debug.DrawLine(transform.position, transform.position + (Vector3.up * 0.1f) + (Vector3.down * groundCheckDistance));
-#endif
 
         if(Physics.Raycast(transform.position, Vector3.down, out hitInfo, groundCheckDistance))
         {
@@ -246,6 +242,11 @@ public class ThirdPersonCharacter : MonoBehaviour {
             {
                 rb.useGravity = true;
             }
+
+            if (!isHoming)
+            {
+                anim.SetBool("isDashing", isDashing);
+            }
         }
 
         jumpTimer -= Time.deltaTime;
@@ -272,6 +273,12 @@ public class ThirdPersonCharacter : MonoBehaviour {
     public void setHoming(bool isHoming)
     {
         this.isHoming = isHoming;
+        anim.SetBool("isDashing", isHoming);
+        if (isHoming)
+        {
+            anim.SetFloat("moveZ", 1.0f);
+            anim.SetTrigger("Dash");
+        }
     }
 
     public bool IsHoming()

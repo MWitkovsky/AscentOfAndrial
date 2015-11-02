@@ -35,11 +35,9 @@ public class AttackHandler : MonoBehaviour {
             if(Vector3.Distance(player.transform.position, destination) <= 1.0f)
             {
                 player.setHoming(false);
-                //player.transform.position = destination;
                 characterModel.LookAt(new Vector3(destination.x + direction.x, characterModel.position.y, destination.z + direction.z));
                 player.GetComponent<Rigidbody>().velocity = new Vector3(player.GetComponent<Rigidbody>().velocity.x, player.groundJumpPower * 1.1f, player.GetComponent<Rigidbody>().velocity.z);
                 //player.getAnimator().SetTrigger("AirAttackSwipe");
-                
 
                 enemy.GetComponent<Rigidbody>().velocity = new Vector3(player.GetComponent<Rigidbody>().velocity.x, -player.groundJumpPower * 4.0f, player.GetComponent<Rigidbody>().velocity.z);
 
@@ -65,17 +63,14 @@ public class AttackHandler : MonoBehaviour {
                 //Non-obvious check: isTrigger is false when enemy is dead
                 if (other.GetComponent<Collider>().isTrigger)
                 {
-                    enemy = other.GetComponent<EnemyHandler>();
-                    destination = other.transform.position;
-                    direction = (other.transform.position - player.transform.position).normalized;
-
-                    Debug.Log(Vector3.Dot(other.transform.forward.normalized, characterModel.forward.normalized));
-
                     if (Vector3.Dot(other.transform.forward.normalized, characterModel.forward.normalized) <= 0.0f)
                     {
+                        enemy = other.GetComponent<EnemyHandler>();
+                        destination = other.transform.position;
+                        direction = (other.transform.position - player.transform.position).normalized;
+                    
                         player.setHoming(true);
                         characterModel.transform.LookAt(other.transform.position);
-
 
                         direction *= player.moveSpeedMultiplier * 2.0f;
 
