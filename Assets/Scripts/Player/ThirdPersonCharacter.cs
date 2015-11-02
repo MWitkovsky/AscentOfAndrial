@@ -134,8 +134,9 @@ public class ThirdPersonCharacter : MonoBehaviour {
         move = Vector3.ProjectOnPlane(move, groundNormal);
         move *= moveSpeedMultiplier;
 
-		anim.SetFloat("moveZ", move.z);
-		Debug.Log(move.z);
+		float dashDir = move.z;
+		anim.SetFloat("moveZ", dashDir);
+		Debug.Log(dashDir);
         rb.velocity = new Vector3(move.x * dashSpeedMultiplier, 1.0f, move.z * dashSpeedMultiplier);
         rb.useGravity = false;
         jumpTimer = landAnimDelay;
