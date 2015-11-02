@@ -4,6 +4,7 @@ using System.Collections;
 [RequireComponent(typeof(Rigidbody))]
 public class ThirdPersonCharacter : MonoBehaviour {
 
+    public SphereCollider attackRadius;
     public float movingTurnSpeed = 360.0f;
     public float stationaryTurnSpeed = 180.0f;
     public float groundJumpPower = 12.0f;
@@ -21,7 +22,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
     private Vector3 groundNormal;
     private Vector3 prevVelocity;
     private float origGroundCheckDistance;
-	private float origGravityMultiplier;
+	//private float origGravityMultiplier;
     private float dashTimer;
     private float jumpTimer;
     private float landAnimDelay; //jumping off ground is broken because of multiple triggers on same frame, this fixes that
@@ -30,17 +31,20 @@ public class ThirdPersonCharacter : MonoBehaviour {
     private bool isDodging;
     private bool isDashing;
     private bool isGrinding;
+    private bool isHoming;
 
     // Use this for initialization
     void Start () {
         rb = GetComponent<Rigidbody>();
         rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
         origGroundCheckDistance = groundCheckDistance;
-		origGravityMultiplier = gravityMultiplier;
+		//origGravityMultiplier = gravityMultiplier;
 
         landAnimDelay = 0.05f;
 
         anim = GetComponent<Animator>();
+
+        attackRadius.enabled = false;
     }
 	
 	public void Move(Vector3 move, bool jump)
@@ -48,6 +52,11 @@ public class ThirdPersonCharacter : MonoBehaviour {
         if (isGrinding)
         {
             HandleGrindingMovement(jump);
+            return;
+        }
+
+        if (isHoming)
+        {
             return;
         }
 
@@ -102,6 +111,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
         if (!isDodging && isGrounded)
         {
             isDodging = true;
+            dashTimer = 0.0f;
 
             if (move.magnitude > 1.0f)
             {
@@ -138,6 +148,12 @@ public class ThirdPersonCharacter : MonoBehaviour {
         jumpTimer = landAnimDelay;
 
         numberOfAirJumps++;
+    }
+
+    public void AirAttack()
+    {
+        attackRadius.enabled = true;
+        //anim.SetTrigger("AirAttack");
     }
 
     private void HandleGroundedMovement(bool jump)
@@ -190,7 +206,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
 
         if(Physics.Raycast(transform.position, Vector3.down, out hitInfo, groundCheckDistance))
         {
-            if (!jump && groundCheckDistance == origGroundCheckDistance)
+            if (!jump && groundCheckDistance == origGroundCheckDistance && hitInfo.transform.gameObject.CompareTag("Ground"))
             {
                 groundNormal = hitInfo.normal;
                 isGrounded = true;
@@ -205,30 +221,14 @@ public class ThirdPersonCharacter : MonoBehaviour {
         }
 
         anim.SetBool("isGrounded", isGrounded);
-
-        /*
-		//Linecast version because I'm dumb
-		//This means we won't get the ground's normals, so slopes will be dumb but whatever
-#if UNITY_EDITOR
-		Debug.DrawLine(transform.position, jumpCheckLinecast.position);
-#endif
-
-		isGrounded = Physics.Linecast (transform.position, jumpCheckLinecast.position);
-
-		if (isGrounded && rb.velocity.y < 0.0f) {
-            anim.SetTrigger("Land");
-            isDodging = false;
-			numberOfAirJumps = 0;
-		}
-        */
     }
-
 
     private void Update()
     {
         dashTimer += Time.deltaTime;
         if(dashTimer > dashTime)
         {
+            isDodging = false;
             isDashing = false;
             if (!isGrinding)
             {
@@ -255,6 +255,21 @@ public class ThirdPersonCharacter : MonoBehaviour {
             isDodging = false;
             numberOfAirJumps = 0;
         }
+    }
+
+    public void setHoming(bool isHoming)
+    {
+        this.isHoming = isHoming;
+    }
+
+    public bool IsHoming()
+    {
+        return isHoming;
+    }
+
+    public Animator getAnimator()
+    {
+        return anim;
     }
 
     public float GetJumpTimer()

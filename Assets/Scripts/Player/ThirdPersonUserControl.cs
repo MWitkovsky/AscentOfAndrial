@@ -13,6 +13,7 @@ public class ThirdPersonUserControl : MonoBehaviour {
     private Quaternion characterRotation;
     private bool jump;
     private bool dodge;
+    private bool attack;
     private Direction dodgeDirection;
 
     enum Direction {Forward, Back, Left, Right, FR, FL, BR, BL};
@@ -90,6 +91,16 @@ public class ThirdPersonUserControl : MonoBehaviour {
                 }
             }
         }
+
+        if (CrossPlatformInputManager.GetButtonDown("Fire1"))
+        {
+            character.AirAttack();
+        }
+
+        /*if (!attack)
+        {
+            attack = CrossPlatformInputManager.GetButtonDown("Fire1");
+        }*/
     }
 
     private void FixedUpdate()
@@ -108,7 +119,7 @@ public class ThirdPersonUserControl : MonoBehaviour {
         }
 
         //Set player's rotation if moving and not on some sort of on-rails thing
-        if ((h != 0.0f || v != 0.0f) && !character.IsGrinding())
+        if ((h != 0.0f || v != 0.0f) && !character.IsGrinding() && !character.IsHoming())
         {
             characterRotation = cam.transform.rotation;
             characterRotation.x = 0;
@@ -157,8 +168,6 @@ public class ThirdPersonUserControl : MonoBehaviour {
         {
             character.Move(move, jump);
         }
-        
-        
 
         jump = false;
         dodge = false;
