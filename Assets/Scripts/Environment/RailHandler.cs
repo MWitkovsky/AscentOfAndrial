@@ -34,6 +34,7 @@ public class RailHandler : MonoBehaviour {
     {
         if (other.gameObject.CompareTag("Player")){
             other.GetComponent<ThirdPersonCharacter>().SetGrinding(true);
+			other.GetComponentInChildren<ParticleSystem>().Play();
             player = other.GetComponent<ThirdPersonCharacter>();
             playerRB = other.GetComponent<Rigidbody>();
 
@@ -66,6 +67,7 @@ public class RailHandler : MonoBehaviour {
         if (other.gameObject.CompareTag("Player"))
         {
             other.GetComponent<ThirdPersonCharacter>().SetGrinding(false);
+			other.GetComponentInChildren<ParticleSystem>().Stop();
             playerRB.useGravity = true;
 
             if (wasReverse)
