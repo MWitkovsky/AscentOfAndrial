@@ -121,6 +121,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
     //used when dodging in the air, consumes a jump
     private void Dash(Vector3 move)
     {
+		anim.SetTrigger("Dash");
         isDashing = true;
         dashTimer = 0.0f;
 
@@ -133,6 +134,8 @@ public class ThirdPersonCharacter : MonoBehaviour {
         move = Vector3.ProjectOnPlane(move, groundNormal);
         move *= moveSpeedMultiplier;
 
+		anim.SetFloat("moveZ", move.z);
+		Debug.Log(move.z);
         rb.velocity = new Vector3(move.x * dashSpeedMultiplier, 1.0f, move.z * dashSpeedMultiplier);
         rb.useGravity = false;
         jumpTimer = landAnimDelay;
