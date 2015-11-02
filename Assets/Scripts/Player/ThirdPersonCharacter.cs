@@ -130,15 +130,23 @@ public class ThirdPersonCharacter : MonoBehaviour {
             move.Normalize();
         }
 
+
         move = transform.InverseTransformDirection(move);
         move = Vector3.ProjectOnPlane(move, groundNormal);
         move *= moveSpeedMultiplier;
 
-		float dashDir = move.z;
+		float dashDir = 0.0f;
+		if(Camera.main.transform.forward.z < 0.0f)
+		dashDir = Camera.main.transform.forward.z - move.z;
+
+		if(Camera.main.transform.forward.z >= 0.0f)
+		dashDir = -1.0f * (Camera.main.transform.forward.z - move.z);
+		
+		rb.velocity = new Vector3(move.x * dashSpeedMultiplier, 1.0f, move.z * dashSpeedMultiplier);
+
 		anim.SetFloat("moveZ", dashDir);
 		Debug.Log(dashDir);
-        rb.velocity = new Vector3(move.x * dashSpeedMultiplier, 1.0f, move.z * dashSpeedMultiplier);
-        rb.useGravity = false;
+		rb.useGravity = false;
         jumpTimer = landAnimDelay;
 
         numberOfAirJumps++;
