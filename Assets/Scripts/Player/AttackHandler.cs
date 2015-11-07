@@ -34,7 +34,7 @@ public class AttackHandler : MonoBehaviour {
         {
             if(Vector3.Distance(player.transform.position, destination) <= 1.0f)
             {
-                player.setHoming(false);
+                player.SetHoming(false);
                 characterModel.LookAt(new Vector3(destination.x + direction.x, characterModel.position.y, destination.z + direction.z));
                 player.GetComponent<Rigidbody>().velocity = new Vector3(player.GetComponent<Rigidbody>().velocity.x, player.groundJumpPower * 1.1f, player.GetComponent<Rigidbody>().velocity.z);
                 //player.getAnimator().SetTrigger("AirAttackSwipe");
@@ -69,7 +69,7 @@ public class AttackHandler : MonoBehaviour {
                         destination = other.transform.position;
                         direction = (other.transform.position - player.transform.position).normalized;
                     
-                        player.setHoming(true);
+                        player.SetHoming(true);
                         characterModel.transform.LookAt(other.transform.position);
 
                         direction *= player.moveSpeedMultiplier * 2.0f;

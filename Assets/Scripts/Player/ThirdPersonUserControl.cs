@@ -17,6 +17,7 @@ public class ThirdPersonUserControl : MonoBehaviour {
     private Direction dodgeDirection;
 
     enum Direction {Forward, Back, Left, Right, FR, FL, BR, BL};
+    public enum Spell {Flamethrower, GroundSpike, SpectralHand};
 
     // Use this for initialization
     void Start () {
@@ -35,8 +36,8 @@ public class ThirdPersonUserControl : MonoBehaviour {
         // get the third person character ( this should never be null due to require component )
         character = GetComponent<ThirdPersonCharacter>();
     }
-	
-	private void Update () {
+
+    private void Update() {
         if (!jump)
         {
             jump = CrossPlatformInputManager.GetButtonDown("Jump");
@@ -81,13 +82,12 @@ public class ThirdPersonUserControl : MonoBehaviour {
                 else if (Input.GetKey(KeyCode.A)) //Left
                 {
                     dodge = true;
-                    dodgeDirection = Direction.Left;                    
+                    dodgeDirection = Direction.Left;
                 }
                 else if (Input.GetKey(KeyCode.D)) //Right
                 {
                     dodge = true;
                     dodgeDirection = Direction.Right;
-                    
                 }
             }
         }
@@ -97,10 +97,27 @@ public class ThirdPersonUserControl : MonoBehaviour {
             character.AirAttack();
         }
 
-        /*if (!attack)
+        if (CrossPlatformInputManager.GetButtonDown("Fire2"))
         {
-            attack = CrossPlatformInputManager.GetButtonDown("Fire1");
-        }*/
+            character.CastSpell(cam.position, cam.forward);
+        }
+
+        //Selecting which spell is being readied
+        //Alpha refers to the top row of numbers on the keyboard vs the numpad
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            character.ChangeSpell(Spell.Flamethrower);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            character.ChangeSpell(Spell.GroundSpike);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            character.ChangeSpell(Spell.SpectralHand);
+        }
     }
 
     private void FixedUpdate()

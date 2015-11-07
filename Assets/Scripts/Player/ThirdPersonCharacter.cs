@@ -4,7 +4,9 @@ using System.Collections;
 [RequireComponent(typeof(Rigidbody))]
 public class ThirdPersonCharacter : MonoBehaviour {
 
+    public GameObject flamethrowerPrefab, groundSpikePrefab, spectralHandPrefab;
     public SphereCollider attackRadius;
+    public float maxSpellRange = 30.0f;
     public float movingTurnSpeed = 360.0f;
     public float stationaryTurnSpeed = 180.0f;
     public float groundJumpPower = 12.0f;
@@ -16,6 +18,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
     public float groundCheckDistance = 1.0f;
     public int maxNumberOfAirJumps = 3;
 
+    private LayerMask groundSpikeLayerMask;
     private Rigidbody rb;
     private Animator anim;
     private AnimatorStateInfo animInfo; //For later use, used for polling which anim state we're in to restrict controls
@@ -32,6 +35,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
     private bool isDashing;
     private bool isGrinding;
     private bool isHoming;
+    private ThirdPersonUserControl.Spell currentSpell;
 
     // Use this for initialization
     void Start () {
@@ -45,6 +49,8 @@ public class ThirdPersonCharacter : MonoBehaviour {
         anim = GetComponent<Animator>();
 
         attackRadius.enabled = false;
+
+        groundSpikeLayerMask = (1 << LayerMask.NameToLayer("Ground"));
     }
 	
 	public void Move(Vector3 move, bool jump)
@@ -167,6 +173,28 @@ public class ThirdPersonCharacter : MonoBehaviour {
         attackRadius.enabled = true;
     }
 
+    public void CastSpell(Vector3 position, Vector3 direction)
+    {
+        if(currentSpell == ThirdPersonUserControl.Spell.Flamethrower)
+        {
+            //Flamethrower stuff
+        }
+        else if(currentSpell == ThirdPersonUserControl.Spell.GroundSpike)
+        {
+            RaycastHit hitInfo;
+
+            if (Physics.Raycast(position, direction, out hitInfo, maxSpellRange, groundSpikeLayerMask))
+            {
+                Vector3 spawnPosition = new Vector3(hitInfo.point.x, hitInfo.point.y - groundSpikePrefab.transform.localScale.y - 0.5f, hitInfo.point.z);
+                Instantiate(groundSpikePrefab, spawnPosition, transform.rotation);
+            }
+        }
+        else
+        {
+            //Spectral Hand stuff
+        }
+    }
+
     private void HandleGroundedMovement(bool jump)
     {
         // check whether conditions are right to allow a jump:
@@ -209,7 +237,6 @@ public class ThirdPersonCharacter : MonoBehaviour {
 
     private void CheckGroundStatus(bool jump)
     {
-        //Raycast version adapted from standard assets, doesn't work half the time...
         RaycastHit hitInfo;
 
         if(Physics.Raycast(transform.position, Vector3.down, out hitInfo, groundCheckDistance))
@@ -270,7 +297,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
         }
     }
 
-    public void setHoming(bool isHoming)
+    public void SetHoming(bool isHoming)
     {
         this.isHoming = isHoming;
         anim.SetBool("isDashing", isHoming);
@@ -294,5 +321,15 @@ public class ThirdPersonCharacter : MonoBehaviour {
     public float GetJumpTimer()
     {
         return jumpTimer;
+    }
+
+    public void ChangeSpell(ThirdPersonUserControl.Spell spell)
+    {
+        currentSpell = spell;
+    }
+
+    public ThirdPersonUserControl.Spell GetSpell()
+    {
+        return currentSpell;
     }
 }
