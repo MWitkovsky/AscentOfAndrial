@@ -32,6 +32,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
     private bool isDashing;
     private bool isGrinding;
     private bool isHoming;
+    private ThirdPersonUserControl.Spell selectedSpell;
 
     // Use this for initialization
     void Start () {
@@ -167,6 +168,11 @@ public class ThirdPersonCharacter : MonoBehaviour {
         attackRadius.enabled = true;
     }
 
+    public void CastSpell()
+    {
+
+    }
+
     private void HandleGroundedMovement(bool jump)
     {
         // check whether conditions are right to allow a jump:
@@ -270,7 +276,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
         }
     }
 
-    public void setHoming(bool isHoming)
+    public void SetHoming(bool isHoming)
     {
         this.isHoming = isHoming;
         anim.SetBool("isDashing", isHoming);
@@ -294,5 +300,15 @@ public class ThirdPersonCharacter : MonoBehaviour {
     public float GetJumpTimer()
     {
         return jumpTimer;
+    }
+
+    public void ChangeSpell(ThirdPersonUserControl.Spell spell)
+    {
+        selectedSpell = spell;
+    }
+
+    public ThirdPersonUserControl.Spell GetSpell()
+    {
+        return selectedSpell;
     }
 }
