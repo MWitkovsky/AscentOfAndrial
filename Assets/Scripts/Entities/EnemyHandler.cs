@@ -42,7 +42,10 @@ public class EnemyHandler : MonoBehaviour {
 
     void OnTriggerEnter(Collider other)
     {
-        //damage player
+        if (other.gameObject.CompareTag("Spell"))
+        {
+            Kill();
+        }
     }
 
     //Kills the enemy, causing physics to start

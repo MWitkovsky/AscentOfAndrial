@@ -99,7 +99,7 @@ public class ThirdPersonUserControl : MonoBehaviour {
 
         if (CrossPlatformInputManager.GetButtonDown("Fire2"))
         {
-            character.CastSpell();
+            character.CastSpell(cam.position, cam.forward);
         }
 
         //Selecting which spell is being readied
