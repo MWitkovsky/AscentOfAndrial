@@ -68,13 +68,12 @@ public class AttackHandler : MonoBehaviour {
                         enemy = other.GetComponent<EnemyHandler>();
                         destination = other.transform.position;
                         direction = (other.transform.position - player.transform.position).normalized;
-                    
+                        direction *= player.moveSpeedMultiplier * 2.0f;
+
                         player.SetHoming(true);
                         characterModel.transform.LookAt(other.transform.position);
 
-                        direction *= player.moveSpeedMultiplier * 2.0f;
-
-                        player.GetComponent<Rigidbody>().useGravity = false;
+                        //player.GetComponent<Rigidbody>().useGravity = false;
 
                         attackRadius.enabled = false;
                         frameCounter = 0;

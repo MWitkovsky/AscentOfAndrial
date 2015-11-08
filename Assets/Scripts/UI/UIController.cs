@@ -10,9 +10,9 @@ public class UIController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         //update spell display
-        if(player.GetSpell() == ThirdPersonUserControl.Spell.Flamethrower)
+        if(player.GetSpell() == ThirdPersonUserControl.Spell.Fireball)
         {
-            spellDisplay.text = "Current Spell: Flamethrower";
+            spellDisplay.text = "Current Spell: Fireball";
         }
         else if(player.GetSpell() == ThirdPersonUserControl.Spell.GroundSpike)
         {
