@@ -34,7 +34,7 @@ public class AttackHandler : MonoBehaviour {
         {
             if(Vector3.Distance(player.transform.position, destination) <= 1.0f)
             {
-                player.SetHoming(false);
+                player.SetHoming(false, false);
                 characterModel.LookAt(new Vector3(destination.x + direction.x, characterModel.position.y, destination.z + direction.z));
                 player.GetComponent<Rigidbody>().velocity = new Vector3(player.GetComponent<Rigidbody>().velocity.x, player.groundJumpPower * 1.1f, player.GetComponent<Rigidbody>().velocity.z);
                 
@@ -70,10 +70,8 @@ public class AttackHandler : MonoBehaviour {
                         direction = (other.transform.position - player.transform.position).normalized;
                         direction *= player.moveSpeedMultiplier * 2.0f;
 
-                        player.SetHoming(true);
+                        player.SetHoming(true, false);
                         characterModel.transform.LookAt(other.transform.position);
-
-                        //player.GetComponent<Rigidbody>().useGravity = false;
 
                         attackRadius.enabled = false;
                         frameCounter = 0;

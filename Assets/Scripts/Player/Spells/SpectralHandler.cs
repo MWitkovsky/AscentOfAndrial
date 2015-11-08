@@ -20,7 +20,7 @@ public class SpectralHandler : MonoBehaviour {
         {
             if (hooked)
             {
-                player.SetHoming(false);
+                player.SetHoming(false, true);
                 player.deleteHand(this);
                 Destroy(gameObject);
             }
@@ -47,8 +47,9 @@ public class SpectralHandler : MonoBehaviour {
             {
                 if (Vector3.Distance(player.transform.position, transform.position) <= 3.0f)
                 {
-                    player.SetHoming(false);
+                    player.SetHoming(false, true);
                     characterModel.LookAt(new Vector3(transform.position.x + direction.x, characterModel.position.y, transform.position.z + direction.z));
+                    player.gameObject.GetComponent<Rigidbody>().velocity = new Vector3(player.gameObject.GetComponent<Rigidbody>().velocity.x, player.groundJumpPower, player.gameObject.GetComponent<Rigidbody>().velocity.z);
 
                     player.deleteHand(this);
                     Destroy(gameObject);
@@ -74,7 +75,7 @@ public class SpectralHandler : MonoBehaviour {
             direction = (transform.position - player.transform.position).normalized;
             direction *= player.moveSpeedMultiplier * 2.0f;
 
-            player.SetHoming(true);
+            player.SetHoming(true, true);
             characterModel.transform.LookAt(transform.position);
 
             player.GetComponent<Rigidbody>().useGravity = false;
