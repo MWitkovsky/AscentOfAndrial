@@ -151,16 +151,26 @@ public class ThirdPersonCharacter : MonoBehaviour {
         move = Vector3.ProjectOnPlane(move, groundNormal);
         move *= moveSpeedMultiplier;
 
-		float dashDir = 0.0f;
+		float dashDirZ = 0.0f;
+		float dashDirX = 0.0f;
 		if(Camera.main.transform.forward.z < 0.0f)
-		dashDir = Camera.main.transform.forward.z - move.z;
+			dashDirZ = Camera.main.transform.forward.z - move.z;
 
 		if(Camera.main.transform.forward.z >= 0.0f)
-		dashDir = -1.0f * (Camera.main.transform.forward.z - move.z);
-		
+			dashDirZ = -1.0f * (Camera.main.transform.forward.z - move.z);
+
+		if(Camera.main.transform.right.x < 0.0f)
+			dashDirX = Camera.main.transform.right.x - move.x;
+
+		if(Camera.main.transform.right.x > 0.0f)
+			dashDirX = -1.0f * (Camera.main.transform.right.x - move.x);
+
+
 		rb.velocity = new Vector3(move.x * dashSpeedMultiplier, 1.0f, move.z * dashSpeedMultiplier);
 
-		anim.SetFloat("moveZ", dashDir);
+		anim.SetFloat("moveZ", dashDirZ);
+		Debug.Log(dashDirX);
+		anim.SetFloat("moveX", dashDirX);
         anim.SetBool("isDashing", isDashing);
 		rb.useGravity = false;
         jumpTimer = landAnimDelay;
