@@ -37,7 +37,7 @@ public class AttackHandler : MonoBehaviour {
                 player.SetHoming(false);
                 characterModel.LookAt(new Vector3(destination.x + direction.x, characterModel.position.y, destination.z + direction.z));
                 player.GetComponent<Rigidbody>().velocity = new Vector3(player.GetComponent<Rigidbody>().velocity.x, player.groundJumpPower * 1.1f, player.GetComponent<Rigidbody>().velocity.z);
-                //player.getAnimator().SetTrigger("AirAttackSwipe");
+                
 
                 enemy.GetComponent<Rigidbody>().velocity = new Vector3(player.GetComponent<Rigidbody>().velocity.x, -player.groundJumpPower * 4.0f, player.GetComponent<Rigidbody>().velocity.z);
 
