@@ -4,7 +4,7 @@ using System.Collections;
 [RequireComponent(typeof(Rigidbody))]
 public class ThirdPersonCharacter : MonoBehaviour {
 
-    public GameObject flamethrowerPrefab, groundSpikePrefab, spectralHandPrefab;
+    public GameObject fireballPrefab, groundSpikePrefab, spectralHandPrefab;
     public SphereCollider attackRadius;
     public float maxSpellRange = 30.0f;
     public float spellCooldown = 2.0f;
@@ -22,7 +22,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
     private LayerMask groundSpikeLayerMask;
     private Animator anim;
     private Rigidbody rb;
-    private SpectralHandler spectralHand;
+    private SpectralHandler spectralHand1, spectralHand2;
     private Vector3 groundNormal;
     private Vector3 prevVelocity;
     private float origGroundCheckDistance;
@@ -181,7 +181,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
         {
             if (currentSpell == ThirdPersonUserControl.Spell.Fireball)
             {
-                //Flamethrower stuff
+                //Fireball stuff
             }
             else if (currentSpell == ThirdPersonUserControl.Spell.GroundSpike)
             {
@@ -195,13 +195,18 @@ public class ThirdPersonCharacter : MonoBehaviour {
             }
             else
             {
-                //Spectral Hand stuff
-                GameObject hand = (GameObject)Instantiate(spectralHandPrefab, transform.position, transform.rotation);
-                spectralHand = hand.GetComponent<SpectralHandler>();
+                if (spectralHand1)
+                {
+                    spectralHand2 = spectralHand1;
+                }
 
-                spectralHand.setDirection(direction);
-                spectralHand.player = this;
-                spectralHand.characterModel = characterModel;
+                GameObject hand = (GameObject)Instantiate(spectralHandPrefab, transform.position, transform.rotation);
+                
+                spectralHand1 = hand.GetComponent<SpectralHandler>();
+
+                spectralHand1.setDirection(direction);
+                spectralHand1.player = this;
+                spectralHand1.characterModel = characterModel;
             }
 
             castTimer = spellCooldown;
@@ -359,5 +364,37 @@ public class ThirdPersonCharacter : MonoBehaviour {
     public void resetCastTimer()
     {
         castTimer = 0.0f;
+    }
+
+    public void deleteHand(SpectralHandler handToDelete)
+    {
+        if(handToDelete == spectralHand1)
+        {
+            spectralHand1 = null;
+        }
+        else
+        {
+            spectralHand2 = null;
+        }
+    }
+
+    public void destroyOtherHand(SpectralHandler callingHand)
+    {
+        if (spectralHand2 == callingHand)
+        {
+            if (spectralHand1)
+            {
+                Destroy(spectralHand1.gameObject);
+                spectralHand1 = null;
+            }
+        }
+        else
+        {
+            if (spectralHand2)
+            {
+                Destroy(spectralHand2.gameObject);
+                spectralHand2 = null;
+            }
+        }
     }
 }

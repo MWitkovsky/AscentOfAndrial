@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
+using UnityStandardAssets.CrossPlatformInput;
 using System.Collections;
 
 //lol spectral HANDler get it?
-[RequireComponent(typeof(SphereCollider))]
 public class SpectralHandler : MonoBehaviour {
 
     public ThirdPersonCharacter player;
@@ -14,16 +14,30 @@ public class SpectralHandler : MonoBehaviour {
     private float distanceTravelled;
     private bool hooked;
 
+    void Update()
+    {
+        if (CrossPlatformInputManager.GetButtonDown("Jump"))
+        {
+            if (hooked)
+            {
+                player.SetHoming(false);
+                player.deleteHand(this);
+                Destroy(gameObject);
+            }
+        }
+    }
+
     void FixedUpdate() {
         if (!hooked)
         {
             if (distanceTravelled < range)
             {
-                transform.Translate(direction * speed * Time.fixedDeltaTime);
+                transform.Translate(direction * speed * Time.fixedDeltaTime, Space.World);
                 distanceTravelled += speed * Time.fixedDeltaTime;
             }
             else
             {
+                player.deleteHand(this);
                 Destroy(gameObject);
             }
         }
@@ -36,6 +50,7 @@ public class SpectralHandler : MonoBehaviour {
                     player.SetHoming(false);
                     characterModel.LookAt(new Vector3(transform.position.x + direction.x, characterModel.position.y, transform.position.z + direction.z));
 
+                    player.deleteHand(this);
                     Destroy(gameObject);
                 }
                 else
@@ -54,6 +69,7 @@ public class SpectralHandler : MonoBehaviour {
             transform.position = other.transform.position;
 
             hooked = true;
+            player.destroyOtherHand(this);
 
             direction = (transform.position - player.transform.position).normalized;
             direction *= player.moveSpeedMultiplier * 2.0f;
@@ -73,5 +89,7 @@ public class SpectralHandler : MonoBehaviour {
     public void setDirection(Vector3 direction)
     {
         this.direction = direction;
+        transform.LookAt(transform.position + direction);
+        direction = transform.forward;
     }
 }
