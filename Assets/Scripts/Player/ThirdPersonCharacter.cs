@@ -7,6 +7,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
     public GameObject flamethrowerPrefab, groundSpikePrefab, spectralHandPrefab;
     public SphereCollider attackRadius;
     public float maxSpellRange = 30.0f;
+    public float spellCooldown = 2.0f;
     public float movingTurnSpeed = 360.0f;
     public float stationaryTurnSpeed = 180.0f;
     public float groundJumpPower = 12.0f;
@@ -19,15 +20,16 @@ public class ThirdPersonCharacter : MonoBehaviour {
     public int maxNumberOfAirJumps = 3;
 
     private LayerMask groundSpikeLayerMask;
-    private Rigidbody rb;
     private Animator anim;
-    private AnimatorStateInfo animInfo; //For later use, used for polling which anim state we're in to restrict controls
+    private Rigidbody rb;
+    private SpectralHandler spectralHand;
     private Vector3 groundNormal;
     private Vector3 prevVelocity;
     private float origGroundCheckDistance;
 	//private float origGravityMultiplier;
     private float dashTimer;
     private float jumpTimer;
+    private float castTimer;
     private float landAnimDelay; //jumping off ground is broken because of multiple triggers on same frame, this fixes that
     private int numberOfAirJumps;
     private bool isGrounded;
@@ -173,26 +175,38 @@ public class ThirdPersonCharacter : MonoBehaviour {
         attackRadius.enabled = true;
     }
 
-    public void CastSpell(Vector3 position, Vector3 direction)
+    public void CastSpell(Vector3 position, Vector3 direction, Transform characterModel)
     {
-        if(currentSpell == ThirdPersonUserControl.Spell.Flamethrower)
+        if(castTimer < 0.0f)
         {
-            //Flamethrower stuff
-        }
-        else if(currentSpell == ThirdPersonUserControl.Spell.GroundSpike)
-        {
-            RaycastHit hitInfo;
-
-            if (Physics.Raycast(position, direction, out hitInfo, maxSpellRange, groundSpikeLayerMask))
+            if (currentSpell == ThirdPersonUserControl.Spell.Fireball)
             {
-                Vector3 spawnPosition = new Vector3(hitInfo.point.x, hitInfo.point.y - groundSpikePrefab.transform.localScale.y - 0.5f, hitInfo.point.z);
-                Instantiate(groundSpikePrefab, spawnPosition, transform.rotation);
+                //Flamethrower stuff
             }
+            else if (currentSpell == ThirdPersonUserControl.Spell.GroundSpike)
+            {
+                RaycastHit hitInfo;
+
+                if (Physics.Raycast(position, direction, out hitInfo, maxSpellRange, groundSpikeLayerMask))
+                {
+                    Vector3 spawnPosition = new Vector3(hitInfo.point.x, hitInfo.point.y - groundSpikePrefab.transform.localScale.y - 0.5f, hitInfo.point.z);
+                    Instantiate(groundSpikePrefab, spawnPosition, transform.rotation);
+                }
+            }
+            else
+            {
+                //Spectral Hand stuff
+                GameObject hand = (GameObject)Instantiate(spectralHandPrefab, transform.position, transform.rotation);
+                spectralHand = hand.GetComponent<SpectralHandler>();
+
+                spectralHand.setDirection(direction);
+                spectralHand.player = this;
+                spectralHand.characterModel = characterModel;
+            }
+
+            castTimer = spellCooldown;
         }
-        else
-        {
-            //Spectral Hand stuff
-        }
+       
     }
 
     private void HandleGroundedMovement(bool jump)
@@ -260,6 +274,8 @@ public class ThirdPersonCharacter : MonoBehaviour {
 
     private void Update()
     {
+        //I accidentally did this one with addition instead of subtraction...
+        //same result but inconsistent with the negative timers. Oh well.
         dashTimer += Time.deltaTime;
         if(dashTimer > dashTime)
         {
@@ -277,6 +293,8 @@ public class ThirdPersonCharacter : MonoBehaviour {
         }
 
         jumpTimer -= Time.deltaTime;
+        castTimer -= Time.deltaTime;
+
         anim.SetFloat("jumpTimer", jumpTimer);
     }
 
@@ -331,5 +349,15 @@ public class ThirdPersonCharacter : MonoBehaviour {
     public ThirdPersonUserControl.Spell GetSpell()
     {
         return currentSpell;
+    }
+
+    public void resetAirJumps()
+    {
+        numberOfAirJumps = 0;
+    }
+
+    public void resetCastTimer()
+    {
+        castTimer = 0.0f;
     }
 }

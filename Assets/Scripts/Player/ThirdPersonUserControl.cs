@@ -17,7 +17,7 @@ public class ThirdPersonUserControl : MonoBehaviour {
     private Direction dodgeDirection;
 
     enum Direction {Forward, Back, Left, Right, FR, FL, BR, BL};
-    public enum Spell {Flamethrower, GroundSpike, SpectralHand};
+    public enum Spell {Fireball, GroundSpike, SpectralHand};
 
     // Use this for initialization
     void Start () {
@@ -99,14 +99,14 @@ public class ThirdPersonUserControl : MonoBehaviour {
 
         if (CrossPlatformInputManager.GetButtonDown("Fire2"))
         {
-            character.CastSpell(cam.position, cam.forward);
+            character.CastSpell(cam.position, cam.forward, characterModel);
         }
 
         //Selecting which spell is being readied
         //Alpha refers to the top row of numbers on the keyboard vs the numpad
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            character.ChangeSpell(Spell.Flamethrower);
+            character.ChangeSpell(Spell.Fireball);
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha2))
