@@ -38,6 +38,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
     private bool isGrinding;
     private bool isHoming;
     private ThirdPersonUserControl.Spell currentSpell;
+	private ThirdPersonUserControl.Direction dashDirection; 
 
     // Use this for initialization
     void Start () {
@@ -153,16 +154,49 @@ public class ThirdPersonCharacter : MonoBehaviour {
         move = Vector3.ProjectOnPlane(move, groundNormal);
         move *= moveSpeedMultiplier;
 
-		float dashDir = 0.0f;
-		if(Camera.main.transform.forward.z < 0.0f)
-		dashDir = Camera.main.transform.forward.z - move.z;
+		float dashDirZ = 0.0f;
+		float dashDirX = 0.0f;
+		/*if(Camera.main.transform.forward.z < 0.0f)
+			dashDirZ = Camera.main.transform.forward.z - move.z;
 
 		if(Camera.main.transform.forward.z >= 0.0f)
-		dashDir = -1.0f * (Camera.main.transform.forward.z - move.z);
-		
+			dashDirZ = -1.0f * (Camera.main.transform.forward.z - move.z);
+
+		if(Camera.main.transform.right.x < 0.0f)
+			dashDirX = Camera.main.transform.right.x - move.x;
+
+		if(Camera.main.transform.right.x > 0.0f)
+			dashDirX = -1.0f * (Camera.main.transform.right.x - move.x);*/
+
+
 		rb.velocity = new Vector3(move.x * dashSpeedMultiplier, 1.0f, move.z * dashSpeedMultiplier);
 
-		anim.SetFloat("moveZ", dashDir);
+		if(dashDirection == ThirdPersonUserControl.Direction.Forward)
+		{
+			anim.SetFloat("moveZ", 1.0f);
+			anim.SetFloat("moveX", 0.0f);
+		}
+
+		if(dashDirection == ThirdPersonUserControl.Direction.Back)
+		{
+			anim.SetFloat("moveZ", -1.0f);
+			anim.SetFloat("moveX", 0.0f);
+		}
+
+		if(dashDirection == ThirdPersonUserControl.Direction.Left)
+		{
+			anim.SetFloat("moveZ", 0.0f);
+			anim.SetFloat("moveX", -1.0f);
+		}
+		
+		if(dashDirection == ThirdPersonUserControl.Direction.Right)
+		{
+			anim.SetFloat("moveZ", 0.0f);
+			anim.SetFloat("moveX", 1.0f);
+		}
+
+		Debug.Log("MoveZ: " + dashDirZ);
+		Debug.Log("MoveX: " + dashDirX);
         anim.SetBool("isDashing", isDashing);
 		rb.useGravity = false;
         jumpTimer = landAnimDelay;
@@ -172,6 +206,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
 
     public void AirAttack()
     {
+		anim.SetTrigger("AirAttackSwipe");
         attackRadius.enabled = true;
     }
 
@@ -358,6 +393,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
         return currentSpell;
     }
 
+<<<<<<< HEAD
     public void resetAirJumps()
     {
         numberOfAirJumps = 0;
@@ -399,4 +435,10 @@ public class ThirdPersonCharacter : MonoBehaviour {
             }
         }
     }
+=======
+	public void ChangeDashDir(ThirdPersonUserControl.Direction dir)
+	{
+		dashDirection = dir;
+	}
+>>>>>>> Dev_AnimationsEverywhere
 }
