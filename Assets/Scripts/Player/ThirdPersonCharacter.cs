@@ -181,7 +181,9 @@ public class ThirdPersonCharacter : MonoBehaviour {
         {
             if (currentSpell == ThirdPersonUserControl.Spell.Fireball)
             {
-                //Fireball stuff
+                GameObject fireball = (GameObject)Instantiate(fireballPrefab, transform.position + direction*3.0f, transform.rotation);
+
+                fireball.GetComponent<FireballHandler>().Launch(direction);
             }
             else if (currentSpell == ThirdPersonUserControl.Spell.GroundSpike)
             {
