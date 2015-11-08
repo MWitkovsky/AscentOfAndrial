@@ -16,7 +16,7 @@ public class ThirdPersonUserControl : MonoBehaviour {
     private bool attack;
     private Direction dodgeDirection;
 
-    enum Direction {Forward, Back, Left, Right, FR, FL, BR, BL};
+    public enum Direction {Forward, Back, Left, Right, FR, FL, BR, BL};
     public enum Spell {Fireball, GroundSpike, SpectralHand};
 
     // Use this for initialization
@@ -61,6 +61,7 @@ public class ThirdPersonUserControl : MonoBehaviour {
                     else
                     {
                         dodgeDirection = Direction.Forward;
+						character.ChangeDashDir(dodgeDirection);
                     }
                 }
                 else if (Input.GetKey(KeyCode.S)) //Backward
@@ -77,17 +78,20 @@ public class ThirdPersonUserControl : MonoBehaviour {
                     else
                     {
                         dodgeDirection = Direction.Back;
+						character.ChangeDashDir(dodgeDirection);
                     }
                 }
                 else if (Input.GetKey(KeyCode.A)) //Left
                 {
                     dodge = true;
                     dodgeDirection = Direction.Left;
+					character.ChangeDashDir(dodgeDirection);
                 }
                 else if (Input.GetKey(KeyCode.D)) //Right
                 {
                     dodge = true;
                     dodgeDirection = Direction.Right;
+					character.ChangeDashDir(dodgeDirection);
                 }
             }
         }
@@ -190,3 +194,4 @@ public class ThirdPersonUserControl : MonoBehaviour {
         dodge = false;
     }
 }
+z
