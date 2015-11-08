@@ -206,8 +206,11 @@ public class ThirdPersonCharacter : MonoBehaviour {
 
     public void AirAttack()
     {
-		anim.SetTrigger("AirAttackSwipe");
-        attackRadius.enabled = true;
+        if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Slash"))
+        {
+            anim.SetTrigger("AirAttackSwipe");
+            attackRadius.enabled = true;
+        }
     }
 
     public void CastSpell(Vector3 position, Vector3 direction, Transform characterModel)
@@ -331,6 +334,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
             if (!isHoming)
             {
                 anim.SetBool("isDashing", isDashing);
+                anim.SetBool("isHoming", isHoming);
             }
         }
 
@@ -357,14 +361,19 @@ public class ThirdPersonCharacter : MonoBehaviour {
         }
     }
 
-    public void SetHoming(bool isHoming)
+    public void SetHoming(bool isHoming, bool isSpectralHand)
     {
         this.isHoming = isHoming;
+        isGrounded = !isHoming;
         anim.SetBool("isDashing", isHoming);
+        anim.SetBool("isHoming", isHoming);
         if (isHoming)
         {
             anim.SetFloat("moveZ", 1.0f);
-            anim.SetTrigger("Dash");
+            if (isSpectralHand)
+            {
+                anim.SetTrigger("Dash");
+            }
         }
     }
 
@@ -393,7 +402,6 @@ public class ThirdPersonCharacter : MonoBehaviour {
         return currentSpell;
     }
 
-<<<<<<< HEAD
     public void resetAirJumps()
     {
         numberOfAirJumps = 0;
@@ -435,10 +443,9 @@ public class ThirdPersonCharacter : MonoBehaviour {
             }
         }
     }
-=======
+
 	public void ChangeDashDir(ThirdPersonUserControl.Direction dir)
 	{
 		dashDirection = dir;
 	}
->>>>>>> Dev_AnimationsEverywhere
 }
