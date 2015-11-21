@@ -46,6 +46,14 @@ public class EnemyHandler : MonoBehaviour {
         {
             Kill();
         }
+        if (other.gameObject.CompareTag("Player"))
+        {
+            ThirdPersonCharacter player = other.gameObject.GetComponent<ThirdPersonCharacter>();
+            if (!player.IsHoming())
+            {
+                player.healthBar.applyDamage(20.0f);
+            }
+        }
     }
 
     //Kills the enemy, causing physics to start

@@ -4,6 +4,7 @@ using System.Collections;
 [RequireComponent(typeof(Rigidbody))]
 public class ThirdPersonCharacter : MonoBehaviour {
 
+    public HealthBar healthBar;
     public GameObject fireballPrefab, groundSpikePrefab, spectralHandPrefab;
     public SphereCollider attackRadius;
     public float maxSpellRange = 30.0f;
