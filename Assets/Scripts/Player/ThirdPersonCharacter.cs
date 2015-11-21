@@ -38,6 +38,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
     private bool isDashing;
     private bool isGrinding;
     private bool isHoming;
+    private bool isHit;
     private ThirdPersonUserControl.Spell currentSpell;
 	private ThirdPersonUserControl.Direction dashDirection; 
 
@@ -62,6 +63,13 @@ public class ThirdPersonCharacter : MonoBehaviour {
         if (isGrinding)
         {
             HandleGrindingMovement(jump);
+            return;
+        }
+
+        if (isHit)
+        {
+            HandleAirborneMovement(jump);
+            CheckGroundStatus(jump);
             return;
         }
 
@@ -283,6 +291,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
             anim.SetTrigger("Jump");
             jumpTimer = landAnimDelay;
 
+            isHit = false;
             numberOfAirJumps++;
             rb.velocity = new Vector3(rb.velocity.x, airJumpPower, rb.velocity.z);
         }
@@ -306,6 +315,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
                 groundNormal = hitInfo.normal;
                 isGrounded = true;
                 isDodging = false;
+                isHit = false;
                 numberOfAirJumps = 0;
             }
         }
@@ -449,4 +459,17 @@ public class ThirdPersonCharacter : MonoBehaviour {
 	{
 		dashDirection = dir;
 	}
+
+    //Took damage
+    public void Hit(Vector3 direction)
+    {
+        isHit = true;
+        anim.SetTrigger("Hit");
+        rb.velocity = (direction * moveSpeedMultiplier) + (Vector3.up * moveSpeedMultiplier / 2.0f);
+    }
+
+    public bool isVulnerable()
+    {
+        return !isHit;
+    }
 }

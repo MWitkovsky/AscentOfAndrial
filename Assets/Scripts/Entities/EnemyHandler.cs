@@ -49,9 +49,10 @@ public class EnemyHandler : MonoBehaviour {
         if (other.gameObject.CompareTag("Player"))
         {
             ThirdPersonCharacter player = other.gameObject.GetComponent<ThirdPersonCharacter>();
-            if (!player.IsHoming())
+            if (!player.IsHoming() && player.isVulnerable())
             {
                 player.healthBar.applyDamage(20.0f);
+                player.Hit(-other.gameObject.GetComponent<ThirdPersonUserControl>().characterModel.transform.forward); //lol
             }
         }
     }
