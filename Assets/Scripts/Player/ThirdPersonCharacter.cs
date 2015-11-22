@@ -39,6 +39,8 @@ public class ThirdPersonCharacter : MonoBehaviour {
     private bool isGrinding;
     private bool isHoming;
     private bool isHit;
+    private bool shouldDie;
+    private bool dead;
     private ThirdPersonUserControl.Spell currentSpell;
 	private ThirdPersonUserControl.Direction dashDirection; 
 
@@ -60,6 +62,11 @@ public class ThirdPersonCharacter : MonoBehaviour {
 	
 	public void Move(Vector3 move, bool jump)
     {
+        if (isHoming || dead)
+        {
+            return;
+        }
+
         if (isGrinding)
         {
             HandleGrindingMovement(jump);
@@ -68,13 +75,11 @@ public class ThirdPersonCharacter : MonoBehaviour {
 
         if (isHit)
         {
-            HandleAirborneMovement(jump);
+            if (!shouldDie)
+            {
+                HandleAirborneMovement(jump);
+            }
             CheckGroundStatus(jump);
-            return;
-        }
-
-        if (isHoming)
-        {
             return;
         }
 
@@ -317,6 +322,16 @@ public class ThirdPersonCharacter : MonoBehaviour {
                 isDodging = false;
                 isHit = false;
                 numberOfAirJumps = 0;
+
+                if (shouldDie)
+                {
+                    dead = true;
+                    anim.SetTrigger("Die");
+                    rb.velocity = Vector3.zero;
+                    GetComponent<CapsuleCollider>().height = 0.0f;
+                    GetComponent<CapsuleCollider>().radius = 0.4f;
+
+                }
             }
         }
         else
@@ -355,10 +370,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
         anim.SetFloat("jumpTimer", jumpTimer);
     }
 
-    public bool IsGrinding()
-    {
-        return isGrinding;
-    }
+    
 
     public void SetGrinding(bool isGrinding)
     {
@@ -388,10 +400,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
         }
     }
 
-    public bool IsHoming()
-    {
-        return isHoming;
-    }
+    
 
     public Animator getAnimator()
     {
@@ -423,6 +432,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
         castTimer = 0.0f;
     }
 
+    //For spectral hand deletions
     public void deleteHand(SpectralHandler handToDelete)
     {
         if(handToDelete == spectralHand1)
@@ -468,8 +478,29 @@ public class ThirdPersonCharacter : MonoBehaviour {
         rb.velocity = (direction * moveSpeedMultiplier) + (Vector3.up * moveSpeedMultiplier / 2.0f);
     }
 
+    public void Kill()
+    {
+        shouldDie = true;
+        groundCheckDistance = origGroundCheckDistance;
+    }
+
+    public bool IsGrinding()
+    {
+        return isGrinding;
+    }
+
+    public bool IsHoming()
+    {
+        return isHoming;
+    }
+
     public bool isVulnerable()
     {
         return !isHit;
+    }
+
+    public bool isDead()
+    {
+        return dead || shouldDie;
     }
 }
