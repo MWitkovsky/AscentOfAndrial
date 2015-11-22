@@ -489,6 +489,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
 
     public void KillImmediately()
     {
+        healthBar.applyDamage(100);
         shouldDie = true;
         dead = true;
         anim.SetTrigger("Die");
