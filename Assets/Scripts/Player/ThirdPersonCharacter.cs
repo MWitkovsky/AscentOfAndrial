@@ -168,9 +168,10 @@ public class ThirdPersonCharacter : MonoBehaviour {
         move = Vector3.ProjectOnPlane(move, groundNormal);
         move *= moveSpeedMultiplier;
 
+        /*
 		float dashDirZ = 0.0f;
 		float dashDirX = 0.0f;
-		/*if(Camera.main.transform.forward.z < 0.0f)
+		if(Camera.main.transform.forward.z < 0.0f)
 			dashDirZ = Camera.main.transform.forward.z - move.z;
 
 		if(Camera.main.transform.forward.z >= 0.0f)
@@ -180,7 +181,8 @@ public class ThirdPersonCharacter : MonoBehaviour {
 			dashDirX = Camera.main.transform.right.x - move.x;
 
 		if(Camera.main.transform.right.x > 0.0f)
-			dashDirX = -1.0f * (Camera.main.transform.right.x - move.x);*/
+			dashDirX = -1.0f * (Camera.main.transform.right.x - move.x);
+        */
 
 
 		rb.velocity = new Vector3(move.x * dashSpeedMultiplier, 1.0f, move.z * dashSpeedMultiplier);
@@ -209,8 +211,10 @@ public class ThirdPersonCharacter : MonoBehaviour {
 			anim.SetFloat("moveX", 1.0f);
 		}
 
-		Debug.Log("MoveZ: " + dashDirZ);
+		/*
+        Debug.Log("MoveZ: " + dashDirZ);
 		Debug.Log("MoveX: " + dashDirX);
+        */
         anim.SetBool("isDashing", isDashing);
 		rb.useGravity = false;
         jumpTimer = landAnimDelay;
@@ -330,7 +334,6 @@ public class ThirdPersonCharacter : MonoBehaviour {
                     rb.velocity = Vector3.zero;
                     GetComponent<CapsuleCollider>().height = 0.0f;
                     GetComponent<CapsuleCollider>().radius = 0.4f;
-
                 }
             }
         }
@@ -482,6 +485,16 @@ public class ThirdPersonCharacter : MonoBehaviour {
     {
         shouldDie = true;
         groundCheckDistance = origGroundCheckDistance;
+    }
+
+    public void KillImmediately()
+    {
+        shouldDie = true;
+        dead = true;
+        anim.SetTrigger("Die");
+        rb.velocity = rb.velocity - new Vector3(rb.velocity.x, 0.0f, rb.velocity.z);
+        GetComponent<CapsuleCollider>().height = 0.0f;
+        GetComponent<CapsuleCollider>().radius = 0.4f;
     }
 
     public bool IsGrinding()
