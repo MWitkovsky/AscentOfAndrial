@@ -21,7 +21,6 @@ public class HealthBar : MonoBehaviour
     void Start()
     {
         healthBar = fillGraphic.GetComponent<Image>();
-        //Health is 1.0f because 1.0f = full bar showing, 0.0f = no bar showing
         health = 100;
     }
 
@@ -91,7 +90,7 @@ public class HealthBar : MonoBehaviour
 
     public void heal(int amount)
     {
-        if(health < 1.00f)
+        if(health < 100)
         {
             if (!isHealing)
             {
@@ -100,10 +99,6 @@ public class HealthBar : MonoBehaviour
                 targetHealth = health / 100.0f; ;
 
                 displayHealth = initHealth;
-
-                isTakingDamage = false;
-                lerpCounter = 0;
-                isHealing = true;
             }
             else
             {
@@ -120,6 +115,10 @@ public class HealthBar : MonoBehaviour
                 health = 100;
                 targetHealth = 1.00f;
             }
+
+            isTakingDamage = false;
+            lerpCounter = 0;
+            isHealing = true;
         }        
     }
 
