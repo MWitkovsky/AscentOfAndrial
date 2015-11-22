@@ -10,8 +10,12 @@ public class UIController : MonoBehaviour {
     public RawImage iconFireball;
     public RawImage iconTSpike;
     public RawImage iconSHand;
-    
-    //Spell icon textures
+
+    //Timer sprites
+    public Image[] timerSlots = new Image[6];
+    public Sprite[] numbers = new Sprite[10];
+
+    //Spell icon sprites
     public Texture fBall_On;
     public Texture fBall_Off;
     public Texture tSpike_On;
@@ -34,7 +38,7 @@ public class UIController : MonoBehaviour {
         if (gameActive)
         {
             timer += Time.deltaTime;
-            timeDisplay.text = DisplayTime(timer);
+            DisplayTime(timer);
         }
 
         //update spell display
@@ -64,12 +68,12 @@ public class UIController : MonoBehaviour {
 
     
     //Converts time to 00:00.00 format
-    string DisplayTime(float time)
+    private void DisplayTime(float time)
     {
         //This check is just for sanity, otherwise a -1 will appear after the display after 0.0
         if (time <= 0.0f)
         {
-            return "00:00.00";
+            timeDisplay.text = "00:00.00";
         }
 
         //strings for handling leading zeroes if needed
@@ -111,7 +115,21 @@ public class UIController : MonoBehaviour {
             milliseconds = millisecondsI.ToString();
         }
 
-        return (minutes + ":" + seconds + "." + milliseconds);
+        timeDisplay.text = (minutes + ":" + seconds + "." + milliseconds);
+
+        setTimerImage(timerSlots[0], minutes.Substring(0, 1));
+        setTimerImage(timerSlots[1], minutes.Substring(1, 1));
+        setTimerImage(timerSlots[2], seconds.Substring(0, 1));
+        setTimerImage(timerSlots[3], seconds.Substring(1, 1));
+        setTimerImage(timerSlots[4], milliseconds.Substring(0, 1));
+        setTimerImage(timerSlots[5], milliseconds.Substring(1, 1));
+    }
+
+    private void setTimerImage(Image slot, string s)
+    {
+        int num;
+        int.TryParse(s, out num);
+        slot.sprite = numbers[num];
     }
 
     //setting the game active/inactive due to level completion or death
