@@ -5,9 +5,10 @@ using System.Collections;
 public class HealthBar : MonoBehaviour
 { 
     public GameObject fillGraphic;
+    public ThirdPersonCharacter player;
 
     private Image healthBar;
-    private float health;
+    private int health;
 
     //for graphical LERP
     private int lerpCounter;
@@ -21,19 +22,19 @@ public class HealthBar : MonoBehaviour
     {
         healthBar = fillGraphic.GetComponent<Image>();
         //Health is 1.0f because 1.0f = full bar showing, 0.0f = no bar showing
-        health = 1.0f;
+        health = 100;
     }
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.KeypadMinus))
         {
-            applyDamage(20.0f);
+            applyDamage(20);
         }
 
         if (Input.GetKeyDown(KeyCode.KeypadPlus))
         {
-            heal(20.0f);
+            heal(20);
         }
 
         //Gives a more intense drain when taking damage versus a gentler fill when healing
@@ -67,19 +68,20 @@ public class HealthBar : MonoBehaviour
 
     //Takes two values and takes the resulting amount of damage
     //1.0f of rawDamage == 1% of total life
-    public void applyDamage(float damage)
+    public void applyDamage(int damage)
     {
-        initHealth = health;
-        health -= damage / 100.0f;
-        targetHealth = health;
+        initHealth = health / 100.0f;
+        health -= damage;
+        targetHealth = health / 100.0f; ;
 
         displayHealth = initHealth;
 
-        if (health < 0.0f)
+        if (health <= 0)
         {
-            health = 0.0f;
-            targetHealth = health;
-            //die
+            health = 0;
+            targetHealth = 0.00f;
+
+            player.Kill();
         }
 
         isHealing = false;
@@ -87,15 +89,15 @@ public class HealthBar : MonoBehaviour
         isTakingDamage = true;
     }
 
-    public void heal(float amount)
+    public void heal(int amount)
     {
         if(health < 1.00f)
         {
             if (!isHealing)
             {
-                initHealth = health;
-                health += amount / 100.0f;
-                targetHealth = health;
+                initHealth = health / 100.0f; ;
+                health += amount;
+                targetHealth = health / 100.0f; ;
 
                 displayHealth = initHealth;
 
@@ -107,15 +109,15 @@ public class HealthBar : MonoBehaviour
             {
                 //If heal effects gained in quick succession, compound the existing fill
                 initHealth = displayHealth;
-                health += amount / 100.0f;
-                targetHealth = health;
+                health += amount;
+                targetHealth = health / 100.0f; ;
 
                 lerpCounter = 0;
             }
             //Clamp health to 100%
-            if (health > 1.00f)
+            if (health > 100)
             {
-                health = 1.00f;
+                health = 100;
                 targetHealth = 1.00f;
             }
         }        

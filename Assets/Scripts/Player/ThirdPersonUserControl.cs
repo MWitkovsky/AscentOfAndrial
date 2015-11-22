@@ -38,6 +38,11 @@ public class ThirdPersonUserControl : MonoBehaviour {
     }
 
     private void Update() {
+        if (character.isDead())
+        {
+            return;
+        }
+
         if (!jump)
         {
             jump = CrossPlatformInputManager.GetButtonDown("Jump");
@@ -126,6 +131,12 @@ public class ThirdPersonUserControl : MonoBehaviour {
 
     private void FixedUpdate()
     {
+        if (character.isDead())
+        {
+            character.Move(Vector3.zero, false);
+            return;
+        }
+
         float h = CrossPlatformInputManager.GetAxis("Horizontal");
         float v = CrossPlatformInputManager.GetAxis("Vertical");
 
