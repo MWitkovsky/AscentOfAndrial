@@ -21,6 +21,11 @@ public class GameController : MonoBehaviour {
         {
             setCursorMode(CursorLockMode.Locked);
         }
+        
+        if(Input.GetKey(KeyCode.R))
+		{
+			Application.LoadLevel(Application.loadedLevel);
+		}
 	}
 
     private void setCursorMode(CursorLockMode mode)
