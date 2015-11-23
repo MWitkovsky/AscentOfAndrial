@@ -20,6 +20,7 @@ public class LookAtHandler : MonoBehaviour {
         if (other.gameObject.CompareTag("Player"))
         {
             parent.LookAt(new Vector3(other.transform.position.x, parent.transform.position.y, other.transform.position.z));
+            parent.Rotate(new Vector3(0.0f, -90.0f, 0.0f));
         }
     }
 }

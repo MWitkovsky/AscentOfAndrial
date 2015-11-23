@@ -63,7 +63,8 @@ public class AttackHandler : MonoBehaviour {
                 //Non-obvious check: isTrigger is false when enemy is dead
                 if (other.GetComponent<Collider>().isTrigger)
                 {
-                    if (Vector3.Dot(other.transform.forward.normalized, characterModel.forward.normalized) <= 0.0f)
+                    other.transform.Rotate(new Vector3(0.0f, 90.0f, 0.0f));
+                    if (Vector3.Dot((other.transform.forward).normalized, characterModel.forward.normalized) <= 0.0f)
                     {
                         enemy = other.GetComponent<EnemyHandler>();
                         destination = other.transform.position;
