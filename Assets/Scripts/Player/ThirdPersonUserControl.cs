@@ -38,7 +38,7 @@ public class ThirdPersonUserControl : MonoBehaviour {
     }
 
     private void Update() {
-        if (character.isDead())
+        if (character.IsDead())
         {
             return;
         }
@@ -131,7 +131,7 @@ public class ThirdPersonUserControl : MonoBehaviour {
 
     private void FixedUpdate()
     {
-        if (character.isDead())
+        if (character.IsDead() || character.IsTextboxOpen())
         {
             character.Move(Vector3.zero, false);
             return;
