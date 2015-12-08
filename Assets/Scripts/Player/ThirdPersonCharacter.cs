@@ -33,6 +33,9 @@ public class ThirdPersonCharacter : MonoBehaviour {
     private float castTimer;
     private float landAnimDelay; //jumping off ground is broken because of multiple triggers on same frame, this fixes that
     private int numberOfAirJumps;
+    private int textboxReadDelay;
+    private int groundCheckDelay;
+    private bool isTextboxOpen;
     private bool isGrounded;
     private bool isDodging;
     private bool isDashing;
@@ -134,17 +137,44 @@ public class ThirdPersonCharacter : MonoBehaviour {
         if (!isDodging && isGrounded)
         {
             isDodging = true;
+            groundCheckDelay = 10;
             dashTimer = 0.0f;
 
             if (move.magnitude > 1.0f)
             {
                 move.Normalize();
-
             }
 
             move = transform.InverseTransformDirection(move);
             move = Vector3.ProjectOnPlane(move, groundNormal);
             move *= moveSpeedMultiplier;
+            jumpTimer = landAnimDelay;
+
+            if (dashDirection == ThirdPersonUserControl.Direction.Forward)
+            {
+                anim.SetFloat("moveZ", 1.0f);
+                anim.SetFloat("moveX", 0.0f);
+            }
+
+            if (dashDirection == ThirdPersonUserControl.Direction.Back)
+            {
+                anim.SetFloat("moveZ", -1.0f);
+                anim.SetFloat("moveX", 0.0f);
+            }
+
+            if (dashDirection == ThirdPersonUserControl.Direction.Left)
+            {
+                anim.SetFloat("moveZ", 0.0f);
+                anim.SetFloat("moveX", -1.0f);
+            }
+
+            if (dashDirection == ThirdPersonUserControl.Direction.Right)
+            {
+                anim.SetFloat("moveZ", 0.0f);
+                anim.SetFloat("moveX", 1.0f);
+            }
+
+            anim.SetBool("isDashing", isDodging);
             jumpTimer = landAnimDelay;
 
             rb.velocity = new Vector3(move.x*2.0f, airJumpPower/3.0f, move.z*2.0f);
@@ -224,7 +254,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
 
     public void AirAttack()
     {
-        if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Slash"))
+        if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Slash") && !isHit && !isGrounded)
         {
             anim.SetTrigger("AirAttackSwipe");
             attackRadius.enabled = true;
@@ -283,7 +313,8 @@ public class ThirdPersonCharacter : MonoBehaviour {
 
             rb.velocity = new Vector3(rb.velocity.x, groundJumpPower, rb.velocity.z);
             isGrounded = false;
-            groundCheckDistance = rb.velocity.y < 0 ? origGroundCheckDistance : 0.01f;
+            //groundCheckDistance = rb.velocity.y < 0 ? origGroundCheckDistance : 0.01f;
+            groundCheckDistance = origGroundCheckDistance;
         }
     }
 
@@ -305,7 +336,8 @@ public class ThirdPersonCharacter : MonoBehaviour {
             rb.velocity = new Vector3(rb.velocity.x, airJumpPower, rb.velocity.z);
         }
 
-        groundCheckDistance = rb.velocity.y < 0 ? origGroundCheckDistance : 0.01f;
+        //groundCheckDistance = rb.velocity.y < 0 ? origGroundCheckDistance : 0.01f;
+        groundCheckDistance = origGroundCheckDistance;
     }
 
     private void HandleGrindingMovement(bool jump)
@@ -315,6 +347,11 @@ public class ThirdPersonCharacter : MonoBehaviour {
 
     private void CheckGroundStatus(bool jump)
     {
+        if(groundCheckDelay > 0)
+        {
+            return;
+        }
+
         RaycastHit hitInfo;
 
         if(Physics.Raycast(transform.position, Vector3.down, out hitInfo, groundCheckDistance))
@@ -369,6 +406,11 @@ public class ThirdPersonCharacter : MonoBehaviour {
 
         jumpTimer -= Time.deltaTime;
         castTimer -= Time.deltaTime;
+        groundCheckDelay--;
+        if (!isTextboxOpen)
+        {
+            textboxReadDelay--;
+        }
 
         anim.SetFloat("jumpTimer", jumpTimer);
     }
@@ -498,6 +540,28 @@ public class ThirdPersonCharacter : MonoBehaviour {
         GetComponent<CapsuleCollider>().radius = 0.4f;
     }
 
+    public void openTextbox()
+    {
+        isTextboxOpen = true;
+        //pause physics and animations
+        rb.isKinematic = true;
+        rb.useGravity = false;
+        anim.speed = 0.0f;
+
+        textboxReadDelay = 10;
+    }
+
+    public void closeTextbox()
+    {
+        isTextboxOpen = false;
+        //restart physics and animations
+        rb.isKinematic = false;
+        rb.useGravity = true;
+        anim.speed = 1.0f;
+
+        textboxReadDelay = 10;
+    }
+
     public bool IsGrinding()
     {
         return isGrinding;
@@ -513,8 +577,18 @@ public class ThirdPersonCharacter : MonoBehaviour {
         return !isHit;
     }
 
-    public bool isDead()
+    public bool IsDead()
     {
         return dead || shouldDie;
+    }
+
+    public bool IsTextboxOpen()
+    {
+        return isTextboxOpen;
+    }
+
+    public bool CanOpenTextbox()
+    {
+        return textboxReadDelay <= 0;
     }
 }

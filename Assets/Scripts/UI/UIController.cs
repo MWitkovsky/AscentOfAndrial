@@ -37,8 +37,11 @@ public class UIController : MonoBehaviour {
         //currently it is just a string, but we can replace the numbers with fancy graphics later by parsing it
         if (gameActive)
         {
-            timer += Time.deltaTime;
-            DisplayTime(timer);
+            if (!player.IsTextboxOpen())
+            {
+                timer += Time.deltaTime;
+                DisplayTime(timer);
+            }
         }
 
         //update spell display
@@ -71,10 +74,10 @@ public class UIController : MonoBehaviour {
     private void DisplayTime(float time)
     {
         //This check is just for sanity, otherwise a -1 will appear after the display after 0.0
-        if (time <= 0.0f)
-        {
-            timeDisplay.text = "00:00.00";
-        }
+        //if (time <= 0.0f)
+        //{
+            //timeDisplay.text = "00:00.00";
+        //}
 
         //strings for handling leading zeroes if needed
         string minutes = "";
@@ -115,7 +118,7 @@ public class UIController : MonoBehaviour {
             milliseconds = millisecondsI.ToString();
         }
 
-        timeDisplay.text = (minutes + ":" + seconds + "." + milliseconds);
+        //timeDisplay.text = (minutes + ":" + seconds + "." + milliseconds);
 
         setTimerImage(timerSlots[0], minutes.Substring(0, 1));
         setTimerImage(timerSlots[1], minutes.Substring(1, 1));
