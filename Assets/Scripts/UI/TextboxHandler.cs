@@ -6,9 +6,12 @@ using UnityStandardAssets.CrossPlatformInput;
 public class TextboxHandler : MonoBehaviour
 {
     public ThirdPersonCharacter player;
+    public AudioClip textSound;
     public Image background, characterPortrait;
     public Text textToPrint;
 
+    private AudioSource source;
+    private float soundDelayTimer;
     private string textQueue;
     private int inputDelay;
 
@@ -17,6 +20,10 @@ public class TextboxHandler : MonoBehaviour
         textToPrint = GetComponent<Text>();
         textQueue = textToPrint.text;
         textToPrint.text = "";
+
+        source = GetComponent<AudioSource>();
+        source.clip = textSound;
+        source.loop = false;
     }
 
     void Update()
@@ -28,6 +35,13 @@ public class TextboxHandler : MonoBehaviour
             characterPortrait.enabled = true;
             textToPrint.text += textQueue.Substring(0, 1);
             textQueue = textQueue.Substring(1);
+
+            soundDelayTimer -= Time.deltaTime;
+            if(soundDelayTimer <= 0.0f)
+            {
+                source.Play();
+                soundDelayTimer = 0.05f;
+            }
         }
 
         if (CrossPlatformInputManager.GetButtonDown("Fire1") && inputDelay < 0)
@@ -43,6 +57,7 @@ public class TextboxHandler : MonoBehaviour
             {
                 textToPrint.text += textQueue;
                 textQueue = "";
+                source.Play();
             }
         }
         else
