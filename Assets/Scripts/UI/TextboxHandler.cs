@@ -9,6 +9,7 @@ public class TextboxHandler : MonoBehaviour
     public AudioClip textSound;
     public Image background, characterPortrait;
     public Text textToPrint;
+    public bool startOpen;
 
     private AudioSource source;
     private float soundDelayTimer;
@@ -24,6 +25,12 @@ public class TextboxHandler : MonoBehaviour
         source = GetComponent<AudioSource>();
         source.clip = textSound;
         source.loop = false;
+
+        if (!startOpen)
+        {
+            background.enabled = false;
+            characterPortrait.enabled = false;
+        }
     }
 
     void Update()
