@@ -7,7 +7,7 @@ public class TextboxHandler : MonoBehaviour
 {
     public ThirdPersonCharacter player;
     public AudioClip textSound;
-    public Image background, characterPortrait;
+    public Image screenOverlay, textboxBackground, characterPortrait;
     public Text textToPrint;
     public bool startOpen;
 
@@ -28,7 +28,8 @@ public class TextboxHandler : MonoBehaviour
 
         if (!startOpen)
         {
-            background.enabled = false;
+            screenOverlay.enabled = false;
+            textboxBackground.enabled = false;
             characterPortrait.enabled = false;
         }
     }
@@ -38,7 +39,8 @@ public class TextboxHandler : MonoBehaviour
         if (textQueue != "")
         {
             player.openTextbox();
-            background.enabled = true;
+            screenOverlay.enabled = true;
+            textboxBackground.enabled = true;
             characterPortrait.enabled = true;
             textToPrint.text += textQueue.Substring(0, 1);
             textQueue = textQueue.Substring(1);
@@ -56,7 +58,8 @@ public class TextboxHandler : MonoBehaviour
             if (textQueue == "")
             {
                 player.closeTextbox();
-                background.enabled = false;
+                screenOverlay.enabled = false;
+                textboxBackground.enabled = false;
                 characterPortrait.enabled = false;
                 textToPrint.text = "";
             }

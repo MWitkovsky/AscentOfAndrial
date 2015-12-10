@@ -3,6 +3,7 @@ using System.Collections;
 
 public class MouseLookCamera : MonoBehaviour
 {
+    public ThirdPersonCharacter player;
     public Transform target;
     public float xSpeed;
     public float ySpeed;
@@ -11,9 +12,10 @@ public class MouseLookCamera : MonoBehaviour
     public float minDistance;
     public float maxDistance;
 
+    private Rigidbody playerRb;
     private Vector3 distanceVector;
     private float x, y;
-    private float distance;
+    private float distance, velModifier, finalDistance;
 
 
     void Start()
@@ -23,6 +25,7 @@ public class MouseLookCamera : MonoBehaviour
         y = angles.x;
 
         distance = (minDistance + maxDistance) / 2.0f;
+        finalDistance = distance;
 
         distanceVector.y = -0.5f;
 
@@ -30,6 +33,8 @@ public class MouseLookCamera : MonoBehaviour
         {
             GetComponent<Rigidbody>().freezeRotation = true;
         }
+
+        playerRb = player.GetComponent<Rigidbody>();
     }
 
     void LateUpdate()
@@ -59,7 +64,11 @@ public class MouseLookCamera : MonoBehaviour
 
             y = ClampAngle(y, yMinLimit, yMaxLimit);
 
-            distanceVector.z = -distance;
+            velModifier = playerRb.velocity.magnitude * 0.5f;
+
+            finalDistance = Mathf.Lerp(finalDistance, distance + velModifier, 0.01f);
+
+            distanceVector.z = -(finalDistance);
 
             Quaternion rotation = Quaternion.Euler(y, x, 0);
             Vector3 position = rotation * distanceVector + target.position;
