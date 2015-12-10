@@ -4,7 +4,7 @@ using System.Collections;
 public class RailHandler : MonoBehaviour {
 
     public Transform origin, destination;
-    public Vector3 lookAt;
+    private Vector3 lookAt;
 
     private ThirdPersonCharacter player;
     private Rigidbody playerRB;
@@ -25,7 +25,30 @@ public class RailHandler : MonoBehaviour {
         {
             if(player.GetJumpTimer() < 0.0f)
             {
-                playerRB.velocity = grindVelocity;  
+                playerRB.velocity = grindVelocity;
+
+                /*if (grindVelocity.y > 0.0f)
+                {
+                    if (wasReverse)
+                    {
+                        grindVelocity += originalVelocity * originalNormalized.y;
+                    }
+                    else
+                    {
+                        grindVelocity -= originalVelocity * originalNormalized.y;
+                    }
+                }
+                else
+                {
+                    if (wasReverse)
+                    {
+                        grindVelocity -= originalVelocity * originalNormalized.y; 
+                    }
+                    else
+                    {
+                        grindVelocity -= originalVelocity * originalNormalized.y;
+                    }
+                }*/
             }            
         }
 	}
@@ -46,13 +69,10 @@ public class RailHandler : MonoBehaviour {
             if (Vector3.Dot(characterModel.forward.normalized, grindVelocity) >= 0)
             {
                 grindVelocity *= player.moveSpeedMultiplier;
-                //characterModel.LookAt(new Vector3(characterModel.position.x, characterModel.position.y, characterModel.position.z));
-                //characterModel.LookAt(characterModel.position + grindVelocity);
             }
             else
             {
                 grindVelocity *= -player.moveSpeedMultiplier;
-                //characterModel.LookAt(origin);
                 wasReverse = true;
             }
 
@@ -82,6 +102,8 @@ public class RailHandler : MonoBehaviour {
             player = null;
             playerRB = null;
         }
+
+        wasReverse = false;
     }
 
 	void BinarySearch(Vector3 position)
@@ -150,25 +172,3 @@ public class RailHandler : MonoBehaviour {
 		return false;
 	}
 }
-
-//Mistakes of the past
-/* The brute-force method.
-float rotationalOffset = this.transform.rotation.y - playerRB.transform.rotation.y;
-
-
-Debug.Log("Global: " + this.GetComponent<BoxCollider>().transform.position.x);
-Debug.Log("Local: " + this.GetComponent<BoxCollider>().transform.localPosition.x);
-
-Debug.Log("Global Player: " + playerRB.transform.position.x);
-Debug.Log("Local Player: " + playerRB.transform.localPosition.x);
-
-if(rotationalOffset != 0)
-    playerRB.transform.rotation.Set(playerRB.transform.rotation.x, this.transform.rotation.y, playerRB.transform.rotation.z, playerRB.transform.rotation.w); 
-
-
-    if(positionOffset != 0)
-    {
-        float correctedX = positionOffset > 0 ? this.GetComponent<BoxCollider>().transform.position.x - 0.5f : this.GetComponent<BoxCollider>().transform.position.x + 0.5f;
-        playerRB.transform.position.Set(correctedX, playerRB.transform.position.y, playerRB.transform.position.z);
-    }
-*/

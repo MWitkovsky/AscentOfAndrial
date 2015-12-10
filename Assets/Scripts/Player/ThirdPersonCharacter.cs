@@ -544,9 +544,13 @@ public class ThirdPersonCharacter : MonoBehaviour {
     {
         isTextboxOpen = true;
         //pause physics and animations
-        rb.isKinematic = true;
-        rb.useGravity = false;
-        anim.speed = 0.0f;
+        if (rb)
+        {
+            rb.isKinematic = true;
+            rb.useGravity = false;
+
+            anim.speed = 0.0f;
+        }
 
         textboxReadDelay = 10;
     }
