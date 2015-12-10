@@ -35,6 +35,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
     private int numberOfAirJumps;
     private int textboxReadDelay;
     private int groundCheckDelay;
+    private bool isFrozen;
     private bool isTextboxOpen;
     private bool isGrounded;
     private bool isDodging;
@@ -412,6 +413,18 @@ public class ThirdPersonCharacter : MonoBehaviour {
             textboxReadDelay--;
         }
 
+        //had to do this here because it broke if called too early
+        if (isFrozen)
+        {
+            if (rb)
+            {
+                rb.isKinematic = true;
+                rb.useGravity = false;
+
+                anim.speed = 0.0f;
+            }
+        }
+
         anim.SetFloat("jumpTimer", jumpTimer);
     }
 
@@ -540,7 +553,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
         GetComponent<CapsuleCollider>().radius = 0.4f;
     }
 
-    public void openTextbox()
+    public void OpenTextbox()
     {
         isTextboxOpen = true;
         //pause physics and animations
@@ -555,7 +568,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
         textboxReadDelay = 10;
     }
 
-    public void closeTextbox()
+    public void CloseTextbox()
     {
         isTextboxOpen = false;
         //restart physics and animations
@@ -564,6 +577,29 @@ public class ThirdPersonCharacter : MonoBehaviour {
         anim.speed = 1.0f;
 
         textboxReadDelay = 10;
+    }
+
+    public void SplashScreenFreeze()
+    {
+        isFrozen = true;
+        textboxReadDelay = 10;
+    }
+
+    public void EndSplashScreen()
+    {
+        isFrozen = false;
+
+        //restart physics and animations
+        rb.isKinematic = false;
+        rb.useGravity = true;
+        anim.speed = 1.0f;
+
+        textboxReadDelay = 10;
+    }
+
+    public bool IsFrozen()
+    {
+        return isFrozen;
     }
 
     public bool IsGrinding()

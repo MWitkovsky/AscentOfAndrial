@@ -1,24 +1,26 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using UnityStandardAssets.CrossPlatformInput;
 
 public class SplashScreenHandler : MonoBehaviour {
 
     public ThirdPersonCharacter player;
     public Image background, logo;
+    public float introLength;
 
-    public Color temp;
-    public float timer, originalTime;
+    private Color temp;
+    private float timer, originalTime;
     private bool halfTime;
 
     void Start()
     {
-        player.openTextbox();
-        originalTime = 3.5f;
+        player.SplashScreenFreeze();
+        originalTime = introLength/2.0f;
         timer = originalTime;
 
         temp = background.color;
-        temp.a = 0;
+        temp.a = 1.0f;
         background.color = temp;
 
         temp = logo.color;
@@ -28,6 +30,20 @@ public class SplashScreenHandler : MonoBehaviour {
 
     void Update()
     {
+        //Lets player skip to the fade-out
+        if (CrossPlatformInputManager.GetButtonDown("Fire1"))
+        {
+            if (!halfTime)
+            {
+                temp = logo.color;
+                temp.a = 1;
+                logo.color = temp;
+
+                halfTime = true;
+                timer = originalTime;
+            }
+        }
+
         timer -= Time.deltaTime;
         if(timer < 0.0f)
         {
@@ -41,13 +57,13 @@ public class SplashScreenHandler : MonoBehaviour {
                 temp.a = 0;
                 background.color = temp;
 
-                player.closeTextbox();
+                player.EndSplashScreen();
                 Destroy(gameObject);
             }
             else
             {
                 temp = logo.color;
-                temp.a = 255;
+                temp.a = 1;
                 logo.color = temp;
 
                 halfTime = true;
@@ -59,17 +75,17 @@ public class SplashScreenHandler : MonoBehaviour {
         if (!halfTime)
         {
             temp = logo.color;
-            temp.a += 255.0f / (originalTime * Time.deltaTime);
+            temp.a += 1.0f / (originalTime / Time.deltaTime);
             logo.color = temp;
         }
         else
         {
             temp = logo.color;
-            temp.a -= 255.0f / (originalTime * Time.deltaTime);
+            temp.a -= 1.0f / (originalTime / Time.deltaTime);
             logo.color = temp;
 
             temp = background.color;
-            temp.a -= 255.0f / (originalTime * Time.deltaTime);
+            temp.a -= 1.0f / (originalTime / Time.deltaTime);
             background.color = temp;
         }
     }
