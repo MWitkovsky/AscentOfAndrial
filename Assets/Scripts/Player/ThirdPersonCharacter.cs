@@ -26,6 +26,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
     private SpectralHandler spectralHand1, spectralHand2;
     private Vector3 groundNormal;
     private Vector3 prevVelocity;
+    private Vector3 normalizedVelocity;
     private float origGroundCheckDistance;
 	//private float origGravityMultiplier;
     private float dashTimer;
@@ -106,16 +107,33 @@ public class ThirdPersonCharacter : MonoBehaviour {
 
             move *= moveSpeedMultiplier;
 
+            normalizedVelocity = move.normalized;
+
             if (isGrounded)
             {
                 HandleGroundedMovement(jump);
-                rb.velocity = new Vector3(move.x, rb.velocity.y, move.z);
             }
             else
             {
                 HandleAirborneMovement(jump);
+            }
+
+            Physics.IgnoreLayerCollision(2, 8, true);
+            RaycastHit wallCheck;
+
+            if (rb.SweepTest(normalizedVelocity, out wallCheck, move.magnitude * Time.fixedDeltaTime))
+            {
+                rb.velocity = new Vector3(0.0f, rb.velocity.y, 0.0f);
+                //rb.velocity = new Vector3(-move.x, rb.velocity.y, -move.z);
+                rb.AddForce(-move*10);
+            }
+            else
+            {
                 rb.velocity = new Vector3(move.x, rb.velocity.y, move.z);
             }
+
+            Physics.IgnoreLayerCollision(2, 8, false);
+
         }
         if (jump && isDodging)
         {
@@ -630,5 +648,10 @@ public class ThirdPersonCharacter : MonoBehaviour {
     public bool CanOpenTextbox()
     {
         return textboxReadDelay <= 0;
+    }
+
+    public bool IsGrounded()
+    {
+        return isGrounded;
     }
 }
