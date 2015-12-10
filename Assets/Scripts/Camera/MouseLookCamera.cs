@@ -64,9 +64,17 @@ public class MouseLookCamera : MonoBehaviour
 
             y = ClampAngle(y, yMinLimit, yMaxLimit);
 
-            velModifier = playerRb.velocity.magnitude * 0.5f;
+            velModifier = playerRb.velocity.magnitude * 0.333f;
 
-            finalDistance = Mathf.Lerp(finalDistance, distance + velModifier, 0.01f);
+            if(distance + velModifier < finalDistance)
+            {
+                finalDistance = Mathf.Lerp(finalDistance, distance + velModifier, 0.04f);
+            }
+            else
+            {
+                finalDistance = Mathf.Lerp(finalDistance, distance + velModifier, 0.01f);
+            }
+            
 
             distanceVector.z = -(finalDistance);
 
