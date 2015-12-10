@@ -121,7 +121,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
             Physics.IgnoreLayerCollision(2, 8, true);
             RaycastHit wallCheck;
 
-            if (rb.SweepTest(normalizedVelocity, out wallCheck, move.magnitude * Time.fixedDeltaTime))
+            if (rb.SweepTest(normalizedVelocity, out wallCheck, move.magnitude * Time.fixedDeltaTime) && !isGrounded)
             {
                 rb.velocity = new Vector3(0.0f, rb.velocity.y, 0.0f);
                 //rb.velocity = new Vector3(-move.x, rb.velocity.y, -move.z);
