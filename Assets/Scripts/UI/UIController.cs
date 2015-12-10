@@ -5,8 +5,6 @@ using System.Collections;
 public class UIController : MonoBehaviour {
 
     public ThirdPersonCharacter player;
-    public Text timeDisplay;
-    public Text spellDisplay;
     public RawImage iconFireball;
     public RawImage iconTSpike;
     public RawImage iconSHand;
@@ -37,7 +35,7 @@ public class UIController : MonoBehaviour {
         //currently it is just a string, but we can replace the numbers with fancy graphics later by parsing it
         if (gameActive)
         {
-            if (!player.IsTextboxOpen())
+            if (!player.IsTextboxOpen() && !player.IsFrozen())
             {
                 timer += Time.deltaTime;
                 DisplayTime(timer);
@@ -47,21 +45,18 @@ public class UIController : MonoBehaviour {
         //update spell display
         if(player.GetSpell() == ThirdPersonUserControl.Spell.Fireball)
         {
-            spellDisplay.text = "Current Spell: Fireball";
             iconFireball.texture = fBall_On;
             iconTSpike.texture = tSpike_Off;
             iconSHand.texture = sHand_Off;
         }
         else if(player.GetSpell() == ThirdPersonUserControl.Spell.GroundSpike)
         {
-            spellDisplay.text = "Current Spell: Ground Spike";
             iconFireball.texture = fBall_Off;
             iconTSpike.texture = tSpike_On;
             iconSHand.texture = sHand_Off;
         }
         else
         {
-            spellDisplay.text = "Current Spell: Spectral Hand";
             iconFireball.texture = fBall_Off;
             iconTSpike.texture = tSpike_Off;
             iconSHand.texture = sHand_On;

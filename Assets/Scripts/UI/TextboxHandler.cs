@@ -38,7 +38,7 @@ public class TextboxHandler : MonoBehaviour
     {
         if (textQueue != "")
         {
-            player.openTextbox();
+            player.OpenTextbox();
             screenOverlay.enabled = true;
             textboxBackground.enabled = true;
             characterPortrait.enabled = true;
@@ -57,7 +57,7 @@ public class TextboxHandler : MonoBehaviour
         {
             if (textQueue == "")
             {
-                player.closeTextbox();
+                player.CloseTextbox();
                 screenOverlay.enabled = false;
                 textboxBackground.enabled = false;
                 characterPortrait.enabled = false;
