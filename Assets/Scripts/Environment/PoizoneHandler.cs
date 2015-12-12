@@ -12,4 +12,17 @@ public class PoizoneHandler : MonoBehaviour {
 	void Update () {
 	
 	}
+	
+	void OnTriggerStay(Collider other)
+	{
+		if (other.gameObject.CompareTag("Player"))
+        {
+			ThirdPersonCharacter player = other.gameObject.GetComponent<ThirdPersonCharacter>();
+            if (player.isVulnerable())
+            {
+                player.healthBar.applyDamage(1);
+               // player.Hit(-other.gameObject.GetComponent<ThirdPersonUserControl>().characterModel.transform.forward); //lol
+            }
+        }
+	}
 }
