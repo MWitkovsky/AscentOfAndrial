@@ -8,7 +8,7 @@ public class RailHandler : MonoBehaviour {
 
     private ThirdPersonCharacter player;
     private Rigidbody playerRB;
-    private Vector3 grindVelocity;
+    private Vector3 grindVelocity, originalGrindVelocity;
     private bool wasReverse;
 
 	private Vector3 beginTemp;
@@ -18,6 +18,7 @@ public class RailHandler : MonoBehaviour {
     void Start()
     {
         grindVelocity = (destination.position - origin.position).normalized;
+        originalGrindVelocity = grindVelocity;
     }
 
 	void FixedUpdate () {
@@ -75,6 +76,16 @@ public class RailHandler : MonoBehaviour {
                 grindVelocity *= -player.moveSpeedMultiplier;
                 wasReverse = true;
             }
+        
+            if((Mathf.Abs(playerRB.velocity.y / 7.0f)) > 1.0f)
+            {
+                grindVelocity *= (Mathf.Abs(playerRB.velocity.y / 7.0f));
+            }
+
+            if ((playerRB.velocity.magnitude / 20.0f) > 1.0f)
+            {
+                grindVelocity *= (playerRB.velocity.magnitude / 20.0f);
+            }
 
             characterModel.LookAt(characterModel.position + grindVelocity);
 
@@ -104,6 +115,7 @@ public class RailHandler : MonoBehaviour {
         }
 
         wasReverse = false;
+        grindVelocity = originalGrindVelocity;
     }
 
 	void BinarySearch(Vector3 position)

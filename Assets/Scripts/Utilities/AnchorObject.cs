@@ -12,10 +12,16 @@ public class AnchorObject : MonoBehaviour {
 	}
 
 	void OnTriggerEnter(Collider other){
-		other.transform.parent = gameObject.transform;
+        if(other.gameObject.CompareTag("Player"))
+        {
+            other.transform.parent = gameObject.transform;
+        }
 	}
 
 	void OnTriggerExit(Collider other){
-		other.transform.parent = null;
+        if (other.gameObject.CompareTag("Player"))
+        {
+            other.transform.parent = null;
+        }
 	}
 }
