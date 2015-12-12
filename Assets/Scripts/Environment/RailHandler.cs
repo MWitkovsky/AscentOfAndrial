@@ -77,14 +77,21 @@ public class RailHandler : MonoBehaviour {
                 wasReverse = true;
             }
         
-            if((Mathf.Abs(playerRB.velocity.y / 7.0f)) > 1.0f)
+            if(Mathf.Abs(playerRB.velocity.y / 2.0f) > 1.0f)
             {
-                grindVelocity *= (Mathf.Abs(playerRB.velocity.y / 7.0f));
+                if((Mathf.Abs(playerRB.velocity.y / 2.0f)) > 3.5f)
+                {
+                    grindVelocity *= 3.5f;
+                }
+                else
+                {
+                    grindVelocity *= Mathf.Abs(playerRB.velocity.y / 2.0f);
+                }
             }
 
-            if ((playerRB.velocity.magnitude / 20.0f) > 1.0f)
+            if ((playerRB.velocity.magnitude - 44.9f) > 0.0f)
             {
-                grindVelocity *= (playerRB.velocity.magnitude / 20.0f);
+                grindVelocity *= 2.0f;
             }
 
             characterModel.LookAt(characterModel.position + grindVelocity);

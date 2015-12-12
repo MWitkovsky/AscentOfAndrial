@@ -36,6 +36,14 @@ public class TextboxHandler : MonoBehaviour
 
     void Update()
     {
+        if (player.IsFrozen())
+        {
+            screenOverlay.enabled = false;
+            textboxBackground.enabled = false;
+            characterPortrait.enabled = false;
+            return;
+        }
+
         if (textQueue != "")
         {
             player.OpenTextbox();
