@@ -45,7 +45,7 @@ public class SpectralHandler : MonoBehaviour {
         {
             if (player.IsHoming()) //hand grabbed a hook
             {
-                if (Vector3.Distance(player.transform.position, transform.position) <= 3.0f)
+                if (Vector3.Distance(player.transform.position, transform.position) <= 6.0f)
                 {
                     player.SetHoming(false, true);
                     characterModel.LookAt(new Vector3(transform.position.x + direction.x, characterModel.position.y, transform.position.z + direction.z));
