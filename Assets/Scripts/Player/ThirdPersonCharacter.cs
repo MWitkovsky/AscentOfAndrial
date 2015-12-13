@@ -654,4 +654,9 @@ public class ThirdPersonCharacter : MonoBehaviour {
     {
         return isGrounded;
     }
+
+    public bool IsDashing()
+    {
+        return isDashing;
+    }
 }
