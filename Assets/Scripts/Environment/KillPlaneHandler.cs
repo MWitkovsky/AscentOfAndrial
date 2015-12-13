@@ -9,5 +9,13 @@ public class KillPlaneHandler : MonoBehaviour {
             ThirdPersonCharacter player = other.gameObject.GetComponent<ThirdPersonCharacter>();
             player.KillImmediately();
         }
+        else if (other.gameObject.CompareTag("Enemy"))
+        {
+            Destroy(other.gameObject);
+        }
+        else if (other.gameObject.CompareTag("Spell"))
+        {
+            Destroy(other.gameObject);
+        }
     }
 }
