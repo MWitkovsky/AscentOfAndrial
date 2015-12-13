@@ -49,7 +49,28 @@ public class FireballHandler : MonoBehaviour {
 
     void OnCollisionEnter(Collision col)
     {
-        //Explodes
+        Explode();
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Enemy"))
+        {
+            Explode();
+
+            other.GetComponent<EnemyHandler>().Kill();
+            other.GetComponent<Rigidbody>().AddExplosionForce(1400.0f, transform.position, sphereCollider.radius);
+        }
+    }
+
+    public void Launch(Vector3 direction)
+    {
+        launch = true;
+        force = direction * launchForce;
+    }
+
+    private void Explode()
+    {
         explode = true;
 
         rb.isKinematic = true;
@@ -57,21 +78,5 @@ public class FireballHandler : MonoBehaviour {
 
         sphereCollider.isTrigger = true;
         sphereCollider.radius = 7.0f;
-    }
-
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.CompareTag("Enemy"))
-        {
-            //we wanna eventually make this an explosion force because unity has a method that simulates explosion force
-            other.GetComponent<EnemyHandler>().Kill();
-        }
-        //other fireball stuff will go here (like melting chains)
-    }
-
-    public void Launch(Vector3 direction)
-    {
-        launch = true;
-        force = direction * launchForce;
     }
 }
