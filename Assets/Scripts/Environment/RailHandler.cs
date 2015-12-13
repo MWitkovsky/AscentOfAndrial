@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityStandardAssets.CrossPlatformInput;
 
 public class RailHandler : MonoBehaviour {
 
@@ -9,7 +10,6 @@ public class RailHandler : MonoBehaviour {
     private ThirdPersonCharacter player;
     private Rigidbody playerRB;
     private Vector3 grindVelocity, originalGrindVelocity;
-    private bool wasReverse;
 
 	private Vector3 beginTemp;
 	private Vector3 endTemp;
@@ -54,42 +54,67 @@ public class RailHandler : MonoBehaviour {
         }
 	}
 
+    void Update()
+    {
+        if (CrossPlatformInputManager.GetButtonDown("Jump"))
+        {
+            if (player)
+            {
+                player.SetGrinding(false);
+                player.GetComponentInChildren<ParticleSystem>().Stop();
+                playerRB.useGravity = true;
+            } 
+
+            player = null;
+            playerRB = null;
+            grindVelocity = originalGrindVelocity;
+        }
+    }
+
     void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Player")){
-            other.GetComponent<ThirdPersonCharacter>().SetGrinding(true);
 			other.GetComponentInChildren<ParticleSystem>().Play();
             player = other.GetComponent<ThirdPersonCharacter>();
             playerRB = other.GetComponent<Rigidbody>();
-
-            Transform characterModel = other.GetComponent<ThirdPersonUserControl>().characterModel;
-
-            //elegant method.
-            BinarySearch(playerRB.transform.position);
-
-            if (Vector3.Dot(characterModel.forward.normalized, grindVelocity) >= 0)
+            if (player.GetJumpTimer() < 0.0f)
             {
-                grindVelocity *= player.moveSpeedMultiplier;
-            }
-            else
-            {
-                grindVelocity *= -player.moveSpeedMultiplier;
-                wasReverse = true;
-            }
-        
-            if((Mathf.Abs(playerRB.velocity.y / 7.0f)) > 1.0f)
-            {
-                grindVelocity *= (Mathf.Abs(playerRB.velocity.y / 7.0f));
-            }
+                player.SetGrinding(true);
 
-            if ((playerRB.velocity.magnitude / 20.0f) > 1.0f)
-            {
-                grindVelocity *= (playerRB.velocity.magnitude / 20.0f);
+                Transform characterModel = other.GetComponent<ThirdPersonUserControl>().characterModel;
+
+                BinarySearch(playerRB.transform.position);
+
+                if (Vector3.Dot(characterModel.forward.normalized, grindVelocity) >= 0)
+                {
+                    grindVelocity *= player.moveSpeedMultiplier;
+                }
+                else
+                {
+                    grindVelocity *= -player.moveSpeedMultiplier;
+                }
+
+                if (Mathf.Abs(playerRB.velocity.y / 2.0f) > 1.0f)
+                {
+                    if ((Mathf.Abs(playerRB.velocity.y / 2.0f)) > 3.5f)
+                    {
+                        grindVelocity *= 3.5f;
+                    }
+                    else
+                    {
+                        grindVelocity *= Mathf.Abs(playerRB.velocity.y / 2.0f);
+                    }
+                }
+
+                if ((playerRB.velocity.magnitude - 44.9f) > 0.0f)
+                {
+                    grindVelocity *= 2.0f;
+                }
+
+                characterModel.LookAt(characterModel.position + grindVelocity);
+
+                playerRB.useGravity = false;
             }
-
-            characterModel.LookAt(characterModel.position + grindVelocity);
-
-            playerRB.useGravity = false;
         }
     }
 
@@ -97,25 +122,18 @@ public class RailHandler : MonoBehaviour {
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            other.GetComponent<ThirdPersonCharacter>().SetGrinding(false);
-			other.GetComponentInChildren<ParticleSystem>().Stop();
-            playerRB.useGravity = true;
+            if (player)
+            {
+                other.GetComponent<ThirdPersonCharacter>().SetGrinding(false);
+                other.GetComponentInChildren<ParticleSystem>().Stop();
+                playerRB.useGravity = true;
 
-            if (wasReverse)
-            {
-                grindVelocity /= -player.moveSpeedMultiplier;
-            }
-            else
-            {
-                grindVelocity /= player.moveSpeedMultiplier;
+                player = null;
+                playerRB = null;
             }
 
-            player = null;
-            playerRB = null;
+            grindVelocity = originalGrindVelocity;
         }
-
-        wasReverse = false;
-        grindVelocity = originalGrindVelocity;
     }
 
 	void BinarySearch(Vector3 position)
@@ -124,7 +142,7 @@ public class RailHandler : MonoBehaviour {
 
 		beginTemp = origin.position;
 		endTemp = destination.position;
-		float positionOffset = 1.0f;
+		float positionOffset = 1.5f;
 		int count = 0;
 		while(!match)
 		{
