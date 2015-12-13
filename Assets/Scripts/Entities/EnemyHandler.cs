@@ -7,7 +7,7 @@ public class EnemyHandler : MonoBehaviour {
     public SphereCollider lookAtBoundary;
     public float wobbleIntensity, wobbleSpeed;
 
-    new private Collider collider;
+    private Collider col;
     private Rigidbody rb;
     private Vector3 originalPosition;
     private bool wobbleUp;
@@ -15,7 +15,7 @@ public class EnemyHandler : MonoBehaviour {
 	void Start () {
         originalPosition = transform.position;
         transform.position = new Vector3(transform.position.x, Random.Range(transform.position.y - wobbleIntensity, transform.position.y + wobbleIntensity), transform.position.z);
-        collider = GetComponent<Collider>();
+        col = GetComponent<Collider>();
         rb = GetComponent<Rigidbody>();
 	}
 	
@@ -61,7 +61,7 @@ public class EnemyHandler : MonoBehaviour {
     public void Kill()
     {
         lookAtBoundary.enabled = false;
-        collider.isTrigger = false;
+        col.isTrigger = false;
         rb.useGravity = true;
         rb.isKinematic = false;
         gameObject.layer = LayerMask.NameToLayer("Corpses");

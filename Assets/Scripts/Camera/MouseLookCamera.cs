@@ -68,11 +68,11 @@ public class MouseLookCamera : MonoBehaviour
 
             if(distance + velModifier < finalDistance)
             {
-                finalDistance = Mathf.Lerp(finalDistance, distance + velModifier, 0.04f);
+                finalDistance = Mathf.Lerp(finalDistance, distance + velModifier, 2.0f * Time.deltaTime);
             }
             else
             {
-                finalDistance = Mathf.Lerp(finalDistance, distance + velModifier, 0.01f);
+                finalDistance = Mathf.Lerp(finalDistance, distance + velModifier, 0.5f * Time.deltaTime);
             }
             
 
