@@ -83,6 +83,8 @@ public class FireballHandler : MonoBehaviour {
         sphereCollider.isTrigger = true;
         sphereCollider.radius = 7.0f;
 
+        GetComponent<MeshRenderer>().enabled = false;
+
         PlayExplosionSound();
     }
 
