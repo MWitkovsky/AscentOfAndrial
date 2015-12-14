@@ -4,9 +4,11 @@ using System.Collections;
 [RequireComponent(typeof(SphereCollider), typeof(Rigidbody))]
 public class FireballHandler : MonoBehaviour {
 
+    public AudioClip shootSound, explosionSound;
     [Range(1f, 4f)]public float gravityMultiplier = 1.0f;
     public float launchForce;
 
+    private AudioSource source;
     private Rigidbody rb;
     private SphereCollider sphereCollider;
     private Vector3 force;
@@ -16,9 +18,11 @@ public class FireballHandler : MonoBehaviour {
 
     void Start()
     {
+        source = GetComponent<AudioSource>();
         rb = GetComponent<Rigidbody>();
         sphereCollider = GetComponent<SphereCollider>();
-        frameCounter = 3;
+
+        source.loop = false;
     }
 
     void FixedUpdate () {
@@ -31,14 +35,14 @@ public class FireballHandler : MonoBehaviour {
         if (launch)
         {
             rb.velocity = force;
+            PlayShootSound();
 
             launch = false;
         }
 
         if (explode)
         {
-            frameCounter--;
-            if(frameCounter < 0)
+            if(!source.isPlaying)
             {
                 sphereCollider.enabled = false;
                 //This will actually be deleted when the fire particles die, but for now...
@@ -78,5 +82,19 @@ public class FireballHandler : MonoBehaviour {
 
         sphereCollider.isTrigger = true;
         sphereCollider.radius = 7.0f;
+
+        PlayExplosionSound();
+    }
+
+    private void PlayShootSound()
+    {
+        source.clip = shootSound;
+        source.Play();
+    }
+
+    private void PlayExplosionSound()
+    {
+        source.clip = explosionSound;
+        source.Play();
     }
 }

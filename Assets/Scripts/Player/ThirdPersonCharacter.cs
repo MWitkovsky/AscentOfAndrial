@@ -4,6 +4,7 @@ using System.Collections;
 [RequireComponent(typeof(Rigidbody))]
 public class ThirdPersonCharacter : MonoBehaviour {
 
+    public AudioClip jumpSound, dashSound, attackSound;
     public HealthBar healthBar;
     public GameObject fireballPrefab, groundSpikePrefab, spectralHandPrefab;
     public SphereCollider attackRadius;
@@ -21,6 +22,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
     public int maxNumberOfAirJumps = 3;
 
     private LayerMask groundSpikeLayerMask;
+    private AudioSource source;
     private Animator anim;
     private Rigidbody rb;
     private SpectralHandler spectralHand1, spectralHand2;
@@ -51,6 +53,9 @@ public class ThirdPersonCharacter : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        source = GetComponent<AudioSource>();
+        source.loop = false;
+
         rb = GetComponent<Rigidbody>();
         rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
         origGroundCheckDistance = groundCheckDistance;
@@ -123,9 +128,16 @@ public class ThirdPersonCharacter : MonoBehaviour {
 
             if (rb.SweepTest(normalizedVelocity, out wallCheck, move.magnitude * Time.fixedDeltaTime) && !isGrounded)
             {
-                rb.velocity = new Vector3(0.0f, rb.velocity.y, 0.0f);
-                //rb.velocity = new Vector3(-move.x, rb.velocity.y, -move.z);
-                rb.AddForce(-move*10);
+                if (wallCheck.collider.gameObject.CompareTag("Ground"))
+                {
+                    rb.velocity = new Vector3(0.0f, rb.velocity.y, 0.0f);
+                    //rb.velocity = new Vector3(-move.x, rb.velocity.y, -move.z);
+                    rb.AddForce(-move * 10);
+                }
+                else
+                {
+                    rb.velocity = new Vector3(move.x, rb.velocity.y, move.z);
+                }
             }
             else
             {
@@ -197,6 +209,8 @@ public class ThirdPersonCharacter : MonoBehaviour {
             jumpTimer = landAnimDelay;
 
             rb.velocity = new Vector3(move.x*2.0f, airJumpPower/3.0f, move.z*2.0f);
+
+            PlayDashSound();
         }
     }
 
@@ -269,6 +283,8 @@ public class ThirdPersonCharacter : MonoBehaviour {
         jumpTimer = landAnimDelay;
 
         numberOfAirJumps++;
+
+        PlayDashSound();
     }
 
     public void AirAttack()
@@ -334,6 +350,8 @@ public class ThirdPersonCharacter : MonoBehaviour {
             isGrounded = false;
             //groundCheckDistance = rb.velocity.y < 0 ? origGroundCheckDistance : 0.01f;
             groundCheckDistance = origGroundCheckDistance;
+
+            PlayJumpSound();
         }
     }
 
@@ -353,6 +371,8 @@ public class ThirdPersonCharacter : MonoBehaviour {
             isHit = false;
             numberOfAirJumps++;
             rb.velocity = new Vector3(rb.velocity.x, airJumpPower, rb.velocity.z);
+
+            PlayJumpSound();
         }
 
         //groundCheckDistance = rb.velocity.y < 0 ? origGroundCheckDistance : 0.01f;
@@ -446,7 +466,23 @@ public class ThirdPersonCharacter : MonoBehaviour {
         anim.SetFloat("jumpTimer", jumpTimer);
     }
 
-    
+    private void PlayDashSound()
+    {
+        source.clip = dashSound;
+        source.Play();
+    }
+
+    private void PlayJumpSound()
+    {
+        source.clip = jumpSound;
+        source.Play();
+    }
+
+    private void PlayAttackSound()
+    {
+        source.clip = attackSound;
+        source.Play();
+    }
 
     public void SetGrinding(bool isGrinding)
     {
@@ -474,9 +510,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
                 anim.SetTrigger("Dash");
             }
         }
-    }
-
-    
+    } 
 
     public Animator getAnimator()
     {

@@ -75,8 +75,14 @@ public class TextboxHandler : MonoBehaviour
 
                 if (isFinalBox)
                 {
-                        Application.LoadLevel(Application.loadedLevel + 1);
+                    if(Application.loadedLevel + 1 >= Application.levelCount)
+                    {
                         Application.LoadLevel(0);
+                    }
+                    else
+                    {
+                        Application.LoadLevel(Application.loadedLevel + 1);
+                    }
                 }
             }
             else

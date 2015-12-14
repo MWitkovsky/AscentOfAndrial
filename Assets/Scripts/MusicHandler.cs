@@ -58,6 +58,7 @@ public class MusicHandler : MonoBehaviour {
     public void PlayVictoryTheme()
     {
         PauseAll();
+        ChangeVolume(1.0f);
         source1.loop = false;
         source1.clip = victoryTheme;
         source1.Play();

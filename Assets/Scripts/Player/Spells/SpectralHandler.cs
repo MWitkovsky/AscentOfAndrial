@@ -5,14 +5,23 @@ using System.Collections;
 //lol spectral HANDler get it?
 public class SpectralHandler : MonoBehaviour {
 
+    public AudioClip shootSound, grabSound;
     public ThirdPersonCharacter player;
     public Transform characterModel;
     public float speed;
     public float range;
 
+    private AudioSource source;
     private Vector3 direction;
     private float distanceTravelled;
     private bool hooked;
+
+    void Start()
+    {
+        source = GetComponent<AudioSource>();
+        source.loop = false;
+        PlayShootSound();
+    }
 
     void Update()
     {
@@ -65,7 +74,7 @@ public class SpectralHandler : MonoBehaviour {
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Hook"))
+        if (other.gameObject.CompareTag("Hook") && !hooked)
         {
             transform.position = other.transform.position;
 
@@ -83,8 +92,20 @@ public class SpectralHandler : MonoBehaviour {
             player.resetAirJumps();
             player.resetCastTimer();
 
-            //Change hand graphic to grabbing
+            PlayGrabSound();
         }
+    }
+
+    private void PlayShootSound()
+    {
+        source.clip = shootSound;
+        source.Play();
+    }
+
+    private void PlayGrabSound()
+    {
+        source.clip = grabSound;
+        source.Play();
     }
 
     public void setDirection(Vector3 direction)

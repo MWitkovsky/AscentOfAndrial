@@ -7,6 +7,7 @@ public class EnemyHandler : MonoBehaviour {
     public SphereCollider lookAtBoundary;
     public float wobbleIntensity, wobbleSpeed;
 
+    private AudioSource source;
     private Collider col;
     private Rigidbody rb;
     private Vector3 originalPosition;
@@ -16,9 +17,11 @@ public class EnemyHandler : MonoBehaviour {
 	void Start () {
         originalPosition = transform.position;
         transform.position = new Vector3(transform.position.x, Random.Range(transform.position.y - wobbleIntensity, transform.position.y + wobbleIntensity), transform.position.z);
+        source = GetComponent<AudioSource>();
         col = GetComponent<Collider>();
         rb = GetComponent<Rigidbody>();
 
+        source.loop = false;
         damageDelay = 1.0f;
 	}
 	
@@ -74,5 +77,7 @@ public class EnemyHandler : MonoBehaviour {
         rb.useGravity = true;
         rb.isKinematic = false;
         gameObject.layer = LayerMask.NameToLayer("Corpses");
+
+        source.Play();
     }
 }
