@@ -6,6 +6,7 @@ using UnityStandardAssets.CrossPlatformInput;
 public class TextboxHandler : MonoBehaviour
 {
     public ThirdPersonCharacter player;
+    public MusicHandler musicHandler;
     public AudioClip textSound;
     public Image screenOverlay, textboxBackground, characterPortrait;
     public Text textToPrint;
@@ -105,5 +106,9 @@ public class TextboxHandler : MonoBehaviour
     public void setFinalBox(bool isFinalBox)
     {
         this.isFinalBox = isFinalBox;
+        if (isFinalBox)
+        {
+            musicHandler.PlayVictoryTheme();
+        }
     }
 }
