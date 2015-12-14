@@ -25,16 +25,8 @@ public GameController gameController;
 		exitEvent.AddListener(exitGame);
 		exitButton.onClick = exitEvent;
 
-		if(gameController.getCursorMode() == CursorLockMode.Locked)
-		{
-			gameController.setCursorMode(CursorLockMode.None);
-		}
-	}
-	
-	// Update is called once per frame
-	void Update () 
-	{
-		
+	    gameController.SetCursorMode(CursorLockMode.None);
+        gameController.SetIsMenu(true);
 	}
 	
 	//Loads the first level.

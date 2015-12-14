@@ -17,22 +17,39 @@ public class LevelSelectController : MonoBehaviour {
 	{
 		Button[] buttons = {buttonMV, buttonIC, buttonAF, buttonCP, buttonBC};
 
-		for(int i = 1; i <=5; i++)
+		/*for(int i = 1; i <= buttons.Length; i++)
 		{
 			Button.ButtonClickedEvent clickEvent = new Button.ButtonClickedEvent();
-			clickEvent.AddListener(delegate{goToLevel(1);});
+			clickEvent.AddListener(delegate{goToLevel(i-1);});
 			buttons[i-1].onClick = clickEvent;
-		}
-	
-		Button.ButtonClickedEvent returnEvent = new Button.ButtonClickedEvent();
+		}*/
+
+        Button.ButtonClickedEvent clickEvent = new Button.ButtonClickedEvent();
+        clickEvent.AddListener(delegate { goToLevel(1); });
+        buttonMV.onClick = clickEvent;
+
+        clickEvent = new Button.ButtonClickedEvent();
+        clickEvent.AddListener(delegate { goToLevel(2); });
+        buttonIC.onClick = clickEvent;
+
+        clickEvent = new Button.ButtonClickedEvent();
+        clickEvent.AddListener(delegate { goToLevel(3); });
+        buttonAF.onClick = clickEvent;
+
+        clickEvent = new Button.ButtonClickedEvent();
+        clickEvent.AddListener(delegate { goToLevel(4); });
+        buttonCP.onClick = clickEvent;
+
+        clickEvent = new Button.ButtonClickedEvent();
+        clickEvent.AddListener(delegate { goToLevel(5); });
+        buttonBC.onClick = clickEvent;
+
+        Button.ButtonClickedEvent returnEvent = new Button.ButtonClickedEvent();
 		returnEvent.AddListener(returnTop);
 		buttonReturn.onClick = returnEvent;
-	}
-	
-	// Update is called once per frame
-	void Update () 
-	{
-		
+
+        gameController.SetCursorMode(CursorLockMode.None);
+        gameController.SetIsMenu(true);
 	}
 	
 	//Loads the selected level
