@@ -8,7 +8,7 @@ public class TextboxSpawner : MonoBehaviour {
     public TextboxHandler textbox;
     public Text textToPrint;
     public Sprite portraitToUse;
-    public bool automatic;
+    public bool automatic, isFinalBox;
 
     void OnTriggerEnter (Collider other)
     {
@@ -18,6 +18,7 @@ public class TextboxSpawner : MonoBehaviour {
             {
                 textbox.SetTextToPrint(textToPrint.text);
                 textbox.SetCharacterPortrait(portraitToUse);
+                textbox.setFinalBox(isFinalBox);
                 Destroy(this);
             }
         }

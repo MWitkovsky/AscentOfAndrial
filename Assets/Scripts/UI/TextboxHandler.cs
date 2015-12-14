@@ -15,6 +15,7 @@ public class TextboxHandler : MonoBehaviour
     private float soundDelayTimer;
     private string textQueue;
     private int inputDelay;
+    private bool isFinalBox;
 
     void Start()
     {
@@ -70,6 +71,11 @@ public class TextboxHandler : MonoBehaviour
                 textboxBackground.enabled = false;
                 characterPortrait.enabled = false;
                 textToPrint.text = "";
+
+                if (isFinalBox)
+                {
+                    Application.LoadLevel(Application.loadedLevel+1);
+                }
             }
             else
             {
@@ -94,5 +100,10 @@ public class TextboxHandler : MonoBehaviour
     public void SetCharacterPortrait(Sprite characterPortrait)
     {
         this.characterPortrait.sprite = characterPortrait;
+    }
+
+    public void setFinalBox(bool isFinalBox)
+    {
+        this.isFinalBox = isFinalBox;
     }
 }
