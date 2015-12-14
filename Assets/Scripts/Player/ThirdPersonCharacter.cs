@@ -551,7 +551,8 @@ public class ThirdPersonCharacter : MonoBehaviour {
     {
         isHit = true;
         anim.SetTrigger("Hit");
-        rb.velocity = (direction * moveSpeedMultiplier) + (Vector3.up * moveSpeedMultiplier / 2.0f);
+        rb.velocity = (direction * moveSpeedMultiplier) + (Vector3.up * moveSpeedMultiplier);
+        jumpTimer = landAnimDelay;
     }
 
     public void Kill()
@@ -653,5 +654,10 @@ public class ThirdPersonCharacter : MonoBehaviour {
     public bool IsGrounded()
     {
         return isGrounded;
+    }
+
+    public bool IsDashing()
+    {
+        return isDashing;
     }
 }

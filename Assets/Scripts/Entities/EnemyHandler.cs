@@ -10,6 +10,7 @@ public class EnemyHandler : MonoBehaviour {
     private Collider col;
     private Rigidbody rb;
     private Vector3 originalPosition;
+    private float damageTimer, damageDelay;
     private bool wobbleUp;
 
 	void Start () {
@@ -17,6 +18,8 @@ public class EnemyHandler : MonoBehaviour {
         transform.position = new Vector3(transform.position.x, Random.Range(transform.position.y - wobbleIntensity, transform.position.y + wobbleIntensity), transform.position.z);
         col = GetComponent<Collider>();
         rb = GetComponent<Rigidbody>();
+
+        damageDelay = 1.0f;
 	}
 	
 	void FixedUpdate () {
@@ -40,19 +43,25 @@ public class EnemyHandler : MonoBehaviour {
         }
 	}
 
+    void Update()
+    {
+        damageTimer -= Time.deltaTime;
+    }
+
     void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Spell"))
         {
             Kill();
         }
-        if (other.gameObject.CompareTag("Player"))
+        if (other.gameObject.CompareTag("Player") && damageTimer <= 0.0f)
         {
             ThirdPersonCharacter player = other.gameObject.GetComponent<ThirdPersonCharacter>();
             if (!player.IsHoming() && player.isVulnerable())
             {
                 player.healthBar.applyDamage(20);
                 player.Hit(-other.gameObject.GetComponent<ThirdPersonUserControl>().characterModel.transform.forward); //lol
+                damageTimer = damageDelay;
             }
         }
     }

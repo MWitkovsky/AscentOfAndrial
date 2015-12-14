@@ -9,11 +9,13 @@ public class MovingPlatformHandler : MonoBehaviour {
 	public float speed;
 	public float resetTime;
     public bool acceleratedMovement;
+    public bool triggerable;
 
 	private Vector3 targetPosition, initialPosition;
 	private string currentState;
     private float timer;
     private float lerpCounter;
+    private bool triggered; //#
 
     private enum MovingTo {toPosition1, toPosition2}
     private MovingTo target;
@@ -28,6 +30,11 @@ public class MovingPlatformHandler : MonoBehaviour {
 	}
 
 	void FixedUpdate() {
+        if(triggerable && !triggered)
+        {
+            return;
+        }
+
         if (acceleratedMovement)
         {
             platform.position = Vector3.Lerp(platform.position, targetPosition, speed * Time.fixedDeltaTime);
@@ -44,6 +51,11 @@ public class MovingPlatformHandler : MonoBehaviour {
 		
         if(Vector3.Distance(platform.position, targetPosition) < 0.2f)
         {
+            if (triggerable)
+            {
+                Destroy(this);
+            }
+
             timer -= Time.fixedDeltaTime;
             if (timer < 0.0f)
             {
@@ -52,6 +64,17 @@ public class MovingPlatformHandler : MonoBehaviour {
             }
         }
 	}
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+        {
+            if (triggerable)
+            {
+                triggered = true;
+            }
+        }
+    }
 
 	void ChangeTarget(){
 		if (target == MovingTo.toPosition1) {

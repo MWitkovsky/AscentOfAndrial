@@ -83,8 +83,6 @@ public class RailHandler : MonoBehaviour {
 
                 Transform characterModel = other.GetComponent<ThirdPersonUserControl>().characterModel;
 
-                BinarySearch(playerRB.transform.position);
-
                 if (Vector3.Dot(characterModel.forward.normalized, grindVelocity) >= 0)
                 {
                     grindVelocity *= player.moveSpeedMultiplier;
@@ -94,7 +92,11 @@ public class RailHandler : MonoBehaviour {
                     grindVelocity *= -player.moveSpeedMultiplier;
                 }
 
-                if (Mathf.Abs(playerRB.velocity.y / 2.0f) > 1.0f)
+                if (player.IsDashing())
+                {
+                    grindVelocity *= 2.0f;
+                }
+                else if (Mathf.Abs(playerRB.velocity.y / 2.0f) > 1.0f)
                 {
                     if ((Mathf.Abs(playerRB.velocity.y / 2.0f)) > 3.5f)
                     {
@@ -106,10 +108,9 @@ public class RailHandler : MonoBehaviour {
                     }
                 }
 
-                if ((playerRB.velocity.magnitude - 44.9f) > 0.0f)
-                {
-                    grindVelocity *= 2.0f;
-                }
+                
+
+                BinarySearch(playerRB.transform.position);
 
                 characterModel.LookAt(characterModel.position + grindVelocity);
 
