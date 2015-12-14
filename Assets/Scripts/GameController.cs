@@ -26,9 +26,14 @@ public class GameController : MonoBehaviour {
 		{
 			Application.LoadLevel(Application.loadedLevel);
 		}
+
+		if(Input.GetKey(KeyCode.F2))
+		{
+			Application.LoadLevel(0);
+		}
 	}
 
-    private void setCursorMode(CursorLockMode mode)
+    public void setCursorMode(CursorLockMode mode)
     {
         currentMode = mode;
         Cursor.lockState = mode;
@@ -42,4 +47,6 @@ public class GameController : MonoBehaviour {
             Cursor.visible = true;
         }
     }
+
+	public CursorLockMode getCursorMode() {return currentMode;}
 }
