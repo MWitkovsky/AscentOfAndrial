@@ -85,11 +85,11 @@ public class RailHandler : MonoBehaviour {
 
                 if (Vector3.Dot(characterModel.forward.normalized, grindVelocity) >= 0)
                 {
-                    grindVelocity *= player.moveSpeedMultiplier;
+                    grindVelocity *= player.maxSpeed;
                 }
                 else
                 {
-                    grindVelocity *= -player.moveSpeedMultiplier;
+                    grindVelocity *= -player.maxSpeed;
                 }
 
                 if (player.IsDashing())
