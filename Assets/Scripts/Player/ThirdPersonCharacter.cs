@@ -4,6 +4,7 @@ using System.Collections;
 [RequireComponent(typeof(Rigidbody))]
 public class ThirdPersonCharacter : MonoBehaviour {
 
+    public Transform characterModel;
     public AudioClip jumpSound, dashSound, attackSound;
     public HealthBar healthBar;
     public GameObject fireballPrefab, groundSpikePrefab, spectralHandPrefab;
@@ -30,6 +31,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
     private Vector3 groundNormal;
     private Vector3 prevVelocity;
     private Vector3 normalizedVelocity;
+    private Vector3 lookAtHolder;
     private float origGroundCheckDistance;
 	//private float origGravityMultiplier;
     private float dashTimer;
@@ -157,6 +159,9 @@ public class ThirdPersonCharacter : MonoBehaviour {
 
             Debug.Log(rb.velocity.magnitude);
 
+            lookAtHolder = transform.position + rb.velocity.normalized;
+            lookAtHolder.y = transform.position.y;
+            characterModel.LookAt(lookAtHolder);
         }
         if (jump && isDodging)
         {
@@ -220,6 +225,9 @@ public class ThirdPersonCharacter : MonoBehaviour {
             jumpTimer = landAnimDelay;
 
             rb.velocity = new Vector3(move.x*2.0f, airJumpPower/3.0f, move.z*2.0f);
+            lookAtHolder = transform.position + rb.velocity.normalized;
+            lookAtHolder.y = transform.position.y;
+            characterModel.LookAt(lookAtHolder);
 
             PlayDashSound();
         }
@@ -292,6 +300,9 @@ public class ThirdPersonCharacter : MonoBehaviour {
         anim.SetBool("isDashing", isDashing);
 		rb.useGravity = false;
         jumpTimer = landAnimDelay;
+        lookAtHolder = transform.position + rb.velocity.normalized;
+        lookAtHolder.y = transform.position.y;
+        characterModel.LookAt(lookAtHolder);
 
         numberOfAirJumps++;
 
