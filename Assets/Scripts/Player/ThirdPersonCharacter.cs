@@ -15,6 +15,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
     public float groundJumpPower = 12.0f;
     public float airJumpPower = 8.0f;
     [Range(1f, 4f)]public float gravityMultiplier = 1.0f;
+    public float maxSpeed = 15.0f;
     public float moveSpeedMultiplier = 1.0f;
     public float dashSpeedMultiplier = 2.0f;
     public float dashTime = 0.2f;
@@ -136,15 +137,25 @@ public class ThirdPersonCharacter : MonoBehaviour {
                 }
                 else
                 {
-                    rb.velocity = new Vector3(move.x, rb.velocity.y, move.z);
+                    //rb.velocity = new Vector3(move.x, rb.velocity.y, move.z);
+                    if (rb.velocity.magnitude < maxSpeed)
+                    {
+                        rb.AddForce(move, ForceMode.Acceleration);
+                    }
                 }
             }
             else
             {
-                rb.velocity = new Vector3(move.x, rb.velocity.y, move.z);
+                //rb.velocity = new Vector3(move.x, rb.velocity.y, move.z);
+                if(rb.velocity.magnitude < maxSpeed)
+                {
+                    rb.AddForce(move, ForceMode.Acceleration);
+                }
             }
 
             Physics.IgnoreLayerCollision(2, 8, false);
+
+            Debug.Log(rb.velocity.magnitude);
 
         }
         if (jump && isDodging)
