@@ -36,8 +36,7 @@ public class AttackHandler : MonoBehaviour {
             {
                 player.SetHoming(false, false);
                 characterModel.LookAt(new Vector3(destination.x + direction.x, characterModel.position.y, destination.z + direction.z));
-                player.GetComponent<Rigidbody>().velocity = new Vector3(player.GetComponent<Rigidbody>().velocity.x, player.groundJumpPower * 1.1f, player.GetComponent<Rigidbody>().velocity.z);
-                
+                player.GetComponent<Rigidbody>().velocity = new Vector3(player.GetComponent<Rigidbody>().velocity.x / 3.0f, player.groundJumpPower * 1.1f, player.GetComponent<Rigidbody>().velocity.z / 3.0f);    
 
                 enemy.GetComponent<Rigidbody>().velocity = new Vector3(player.GetComponent<Rigidbody>().velocity.x, -player.groundJumpPower * 4.0f, player.GetComponent<Rigidbody>().velocity.z);
 

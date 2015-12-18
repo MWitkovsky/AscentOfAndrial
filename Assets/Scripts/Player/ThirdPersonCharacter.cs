@@ -17,7 +17,9 @@ public class ThirdPersonCharacter : MonoBehaviour {
     public float airJumpPower = 8.0f;
     [Range(1f, 4f)]public float gravityMultiplier = 1.0f;
     public float maxSpeed = 15.0f;
-    public float moveSpeedMultiplier = 1.0f;
+    public float rotateSpeed = 15.0f;
+    public float decelerationSpeed = 2.0f;
+    public float moveSpeedMultiplier = 30.0f;
     public float dashSpeedMultiplier = 2.0f;
     public float dashTime = 0.2f;
     public float groundCheckDistance = 1.0f;
@@ -114,7 +116,6 @@ public class ThirdPersonCharacter : MonoBehaviour {
             move = Vector3.ProjectOnPlane(move, groundNormal);
 
             move *= moveSpeedMultiplier;
-
             moveNormal = move.normalized;
 
             if (isGrounded)
@@ -126,23 +127,25 @@ public class ThirdPersonCharacter : MonoBehaviour {
                 HandleAirborneMovement(jump);
             }
 
-            /*Physics.IgnoreLayerCollision(2, 8, true);
+            //Sweep test to see if moving in a direction would cause intersect with ground geometry
             RaycastHit wallCheck;
-
-            if (rb.SweepTest(normalizedVelocity, out wallCheck, move.magnitude * Time.fixedDeltaTime) && !isGrounded)
+            if (rb.SweepTest(moveNormal, out wallCheck, move.magnitude * Time.fixedDeltaTime) && !isGrounded)
             {
                 if (wallCheck.collider.gameObject.CompareTag("Ground"))
                 {
-                    rb.velocity = new Vector3(0.0f, rb.velocity.y, 0.0f);
-                    //rb.velocity = new Vector3(-move.x, rb.velocity.y, -move.z);
-                    rb.AddForce(-move * 10);
+                    rb.AddForce(-move * 2.0f);
                 }
                 else
                 {
                     //rb.velocity = new Vector3(move.x, rb.velocity.y, move.z);
                     if (rb.velocity.magnitude < maxSpeed)
                     {
-                        rb.AddForce(move, ForceMode.Acceleration);
+                        rb.AddForce(move);
+                    }
+
+                    if (moveNormal != rb.velocity.normalized)
+                    {
+                        Rotate(moveNormal);
                     }
                 }
             }
@@ -151,27 +154,23 @@ public class ThirdPersonCharacter : MonoBehaviour {
                 //rb.velocity = new Vector3(move.x, rb.velocity.y, move.z);
                 if(rb.velocity.magnitude < maxSpeed)
                 {
-                    rb.AddForce(move, ForceMode.Acceleration);
+                    rb.AddForce(move);
                 }
-            }
 
-            Physics.IgnoreLayerCollision(2, 8, false);*/
-
-            if(moveNormal != rb.velocity.normalized)
-            {
-                Rotate(moveNormal);
-            }
-
-            if (rb.velocity.magnitude < maxSpeed)
-            {
-                rb.AddForce(move, ForceMode.Acceleration);
+                if (moveNormal != rb.velocity.normalized)
+                {
+                    Rotate(moveNormal);
+                }
             }
 
             //look at direction of movement
             lookAtHolder = transform.position + rb.velocity.normalized;
             lookAtHolder.y = transform.position.y;
             characterModel.LookAt(lookAtHolder);
+
+            anim.SetFloat("moveSpeed", rb.velocity.magnitude / maxSpeed);
         }
+
         if (jump && isDodging)
         {
             isDodging = false;
@@ -181,9 +180,24 @@ public class ThirdPersonCharacter : MonoBehaviour {
 
     void Rotate(Vector3 direction)
     {
+        
         Vector3 y = new Vector3(0.0f, rb.velocity.y, 0.0f);
         rb.velocity -= y;
-        rb.velocity = rb.velocity.magnitude * Vector3.Lerp(rb.velocity.normalized, direction, 0.5f);
+        
+        if(direction == Vector3.zero && isGrounded)
+        {
+            rb.velocity = rb.velocity.normalized * Mathf.Lerp(rb.velocity.magnitude, 0.0f, decelerationSpeed * Time.fixedDeltaTime);
+        }
+        else if (rb.velocity.magnitude > 1.0f && direction != Vector3.zero)
+        {
+            rb.velocity = rb.velocity.magnitude * Vector3.Lerp(rb.velocity.normalized, direction, rotateSpeed * Time.fixedDeltaTime);
+        }
+
+        if(rb.velocity.magnitude > maxSpeed)
+        {
+            rb.velocity = rb.velocity.normalized * Mathf.Lerp(rb.velocity.magnitude, maxSpeed, decelerationSpeed * Time.fixedDeltaTime);
+        }
+
         rb.velocity += y;
     }
 
@@ -214,7 +228,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
             move *= moveSpeedMultiplier;
             jumpTimer = landAnimDelay;
 
-            if (dashDirection == ThirdPersonUserControl.Direction.Forward)
+            /*if (dashDirection == ThirdPersonUserControl.Direction.Forward)
             {
                 anim.SetFloat("moveZ", 1.0f);
                 anim.SetFloat("moveX", 0.0f);
@@ -236,7 +250,9 @@ public class ThirdPersonCharacter : MonoBehaviour {
             {
                 anim.SetFloat("moveZ", 0.0f);
                 anim.SetFloat("moveX", 1.0f);
-            }
+            }*/
+            anim.SetFloat("moveZ", 1.0f);
+            anim.SetFloat("moveX", 0.0f);
 
             anim.SetBool("isDashing", isDodging);
             jumpTimer = landAnimDelay;
@@ -267,26 +283,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
         move = Vector3.ProjectOnPlane(move, groundNormal);
         move *= moveSpeedMultiplier;
 
-        /*
-		float dashDirZ = 0.0f;
-		float dashDirX = 0.0f;
-		if(Camera.main.transform.forward.z < 0.0f)
-			dashDirZ = Camera.main.transform.forward.z - move.z;
-
-		if(Camera.main.transform.forward.z >= 0.0f)
-			dashDirZ = -1.0f * (Camera.main.transform.forward.z - move.z);
-
-		if(Camera.main.transform.right.x < 0.0f)
-			dashDirX = Camera.main.transform.right.x - move.x;
-
-		if(Camera.main.transform.right.x > 0.0f)
-			dashDirX = -1.0f * (Camera.main.transform.right.x - move.x);
-        */
-
-
-		rb.velocity = new Vector3(move.x * dashSpeedMultiplier, 1.0f, move.z * dashSpeedMultiplier);
-
-		if(dashDirection == ThirdPersonUserControl.Direction.Forward)
+        /*if(dashDirection == ThirdPersonUserControl.Direction.Forward)
 		{
 			anim.SetFloat("moveZ", 1.0f);
 			anim.SetFloat("moveX", 0.0f);
@@ -308,16 +305,20 @@ public class ThirdPersonCharacter : MonoBehaviour {
 		{
 			anim.SetFloat("moveZ", 0.0f);
 			anim.SetFloat("moveX", 1.0f);
-		}
+		}*/
 
-		/*
-        Debug.Log("MoveZ: " + dashDirZ);
-		Debug.Log("MoveX: " + dashDirX);
-        */
+        anim.SetFloat("moveZ", 1.0f);
+        anim.SetFloat("moveX", 0.0f);
+
         anim.SetBool("isDashing", isDashing);
-		rb.useGravity = false;
+		//rb.useGravity = false;
         jumpTimer = landAnimDelay;
-        lookAtHolder = transform.position + rb.velocity.normalized;
+
+        //rb.velocity = new Vector3(move.x * dashSpeedMultiplier, 1.0f, move.z * dashSpeedMultiplier);
+        rb.velocity = new Vector3(0.0f, 1.0f, 0.0f);
+        rb.AddForce(move * dashSpeedMultiplier, ForceMode.Impulse);
+
+        lookAtHolder = transform.position + move;
         lookAtHolder.y = transform.position.y;
         characterModel.LookAt(lookAtHolder);
 

@@ -58,7 +58,7 @@ public class SpectralHandler : MonoBehaviour {
                 {
                     player.SetHoming(false, true);
                     characterModel.LookAt(new Vector3(transform.position.x + direction.x, characterModel.position.y, transform.position.z + direction.z));
-                    player.gameObject.GetComponent<Rigidbody>().velocity = new Vector3(player.gameObject.GetComponent<Rigidbody>().velocity.x, player.groundJumpPower, player.gameObject.GetComponent<Rigidbody>().velocity.z);
+                    player.gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0.0f, player.groundJumpPower, 0.0f);
 
                     player.deleteHand(this);
                     Destroy(gameObject);

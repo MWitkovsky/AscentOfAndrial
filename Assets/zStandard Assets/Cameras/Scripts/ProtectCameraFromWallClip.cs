@@ -22,6 +22,7 @@ namespace UnityStandardAssets.Cameras
         private Ray m_Ray;                        // the ray used in the lateupdate for casting between the camera and the target
         private RaycastHit[] m_Hits;              // the hits between the camera and the target
         private RayHitComparer m_RayHitComparer;  // variable to compare raycast hit distances
+        private bool hitSomething;
 
 
         private void Start()
@@ -37,7 +38,7 @@ namespace UnityStandardAssets.Cameras
         }
 
 
-        private void LateUpdate()
+        public void LateUpdate()
         {
             // initially set the target distance
             float targetDist = m_OriginalDist;
@@ -49,7 +50,7 @@ namespace UnityStandardAssets.Cameras
             var cols = Physics.OverlapSphere(m_Ray.origin, sphereCastRadius);
 
             bool initialIntersect = false;
-            bool hitSomething = false;
+            hitSomething = false;
 
             // loop through all the collisions to check if something we care about
             for (int i = 0; i < cols.Length; i++)
@@ -111,7 +112,6 @@ namespace UnityStandardAssets.Cameras
             m_Cam.localPosition = -Vector3.forward*m_CurrentDist;
         }
 
-
         // comparer for check distances in ray cast hits
         public class RayHitComparer : IComparer
         {
@@ -119,6 +119,16 @@ namespace UnityStandardAssets.Cameras
             {
                 return ((RaycastHit) x).distance.CompareTo(((RaycastHit) y).distance);
             }
+        }
+
+        public bool HitSomething()
+        {
+            return hitSomething;
+        }
+
+        public float GetCurrentDistance()
+        {
+            return m_CurrentDist;
         }
     }
 }
