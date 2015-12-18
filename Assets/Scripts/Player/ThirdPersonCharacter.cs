@@ -167,8 +167,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
                 rb.AddForce(move, ForceMode.Acceleration);
             }
 
-            Debug.Log(move.normalized + " " + rb.velocity.normalized + " " + transform.forward);
-
+            //look at direction of movement
             lookAtHolder = transform.position + rb.velocity.normalized;
             lookAtHolder.y = transform.position.y;
             characterModel.LookAt(lookAtHolder);
