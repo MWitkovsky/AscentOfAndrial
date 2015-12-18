@@ -30,7 +30,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
     private SpectralHandler spectralHand1, spectralHand2;
     private Vector3 groundNormal;
     private Vector3 prevVelocity;
-    private Vector3 normalizedVelocity;
+    private Vector3 moveNormal;
     private Vector3 lookAtHolder;
     private float origGroundCheckDistance;
 	//private float origGravityMultiplier;
@@ -115,7 +115,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
 
             move *= moveSpeedMultiplier;
 
-            normalizedVelocity = move.normalized;
+            moveNormal = move.normalized;
 
             if (isGrounded)
             {
@@ -126,7 +126,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
                 HandleAirborneMovement(jump);
             }
 
-            Physics.IgnoreLayerCollision(2, 8, true);
+            /*Physics.IgnoreLayerCollision(2, 8, true);
             RaycastHit wallCheck;
 
             if (rb.SweepTest(normalizedVelocity, out wallCheck, move.magnitude * Time.fixedDeltaTime) && !isGrounded)
@@ -155,9 +155,19 @@ public class ThirdPersonCharacter : MonoBehaviour {
                 }
             }
 
-            Physics.IgnoreLayerCollision(2, 8, false);
+            Physics.IgnoreLayerCollision(2, 8, false);*/
 
-            Debug.Log(rb.velocity.magnitude);
+            if(moveNormal != rb.velocity.normalized)
+            {
+                Rotate(moveNormal);
+            }
+
+            if (rb.velocity.magnitude < maxSpeed)
+            {
+                rb.AddForce(move, ForceMode.Acceleration);
+            }
+
+            Debug.Log(move.normalized + " " + rb.velocity.normalized + " " + transform.forward);
 
             lookAtHolder = transform.position + rb.velocity.normalized;
             lookAtHolder.y = transform.position.y;
@@ -168,6 +178,14 @@ public class ThirdPersonCharacter : MonoBehaviour {
             isDodging = false;
             HandleAirborneMovement(jump);
         }
+    }
+
+    void Rotate(Vector3 direction)
+    {
+        Vector3 y = new Vector3(0.0f, rb.velocity.y, 0.0f);
+        rb.velocity -= y;
+        rb.velocity = rb.velocity.magnitude * Vector3.Lerp(rb.velocity.normalized, direction, 0.5f);
+        rb.velocity += y;
     }
 
     //Called from User Control, calls Dash if requested while airborne
