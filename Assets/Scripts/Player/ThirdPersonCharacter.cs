@@ -4,6 +4,7 @@ using System.Collections;
 [RequireComponent(typeof(Rigidbody))]
 public class ThirdPersonCharacter : MonoBehaviour {
 
+    public Transform characterModel;
     public AudioClip jumpSound, dashSound, attackSound;
     public HealthBar healthBar;
     public GameObject fireballPrefab, groundSpikePrefab, spectralHandPrefab;
@@ -15,6 +16,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
     public float groundJumpPower = 12.0f;
     public float airJumpPower = 8.0f;
     [Range(1f, 4f)]public float gravityMultiplier = 1.0f;
+    public float maxSpeed = 15.0f;
     public float moveSpeedMultiplier = 1.0f;
     public float dashSpeedMultiplier = 2.0f;
     public float dashTime = 0.2f;
@@ -28,7 +30,8 @@ public class ThirdPersonCharacter : MonoBehaviour {
     private SpectralHandler spectralHand1, spectralHand2;
     private Vector3 groundNormal;
     private Vector3 prevVelocity;
-    private Vector3 normalizedVelocity;
+    private Vector3 moveNormal;
+    private Vector3 lookAtHolder;
     private float origGroundCheckDistance;
 	//private float origGravityMultiplier;
     private float dashTimer;
@@ -112,7 +115,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
 
             move *= moveSpeedMultiplier;
 
-            normalizedVelocity = move.normalized;
+            moveNormal = move.normalized;
 
             if (isGrounded)
             {
@@ -123,7 +126,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
                 HandleAirborneMovement(jump);
             }
 
-            Physics.IgnoreLayerCollision(2, 8, true);
+            /*Physics.IgnoreLayerCollision(2, 8, true);
             RaycastHit wallCheck;
 
             if (rb.SweepTest(normalizedVelocity, out wallCheck, move.magnitude * Time.fixedDeltaTime) && !isGrounded)
@@ -136,22 +139,52 @@ public class ThirdPersonCharacter : MonoBehaviour {
                 }
                 else
                 {
-                    rb.velocity = new Vector3(move.x, rb.velocity.y, move.z);
+                    //rb.velocity = new Vector3(move.x, rb.velocity.y, move.z);
+                    if (rb.velocity.magnitude < maxSpeed)
+                    {
+                        rb.AddForce(move, ForceMode.Acceleration);
+                    }
                 }
             }
             else
             {
-                rb.velocity = new Vector3(move.x, rb.velocity.y, move.z);
+                //rb.velocity = new Vector3(move.x, rb.velocity.y, move.z);
+                if(rb.velocity.magnitude < maxSpeed)
+                {
+                    rb.AddForce(move, ForceMode.Acceleration);
+                }
             }
 
-            Physics.IgnoreLayerCollision(2, 8, false);
+            Physics.IgnoreLayerCollision(2, 8, false);*/
 
+            if(moveNormal != rb.velocity.normalized)
+            {
+                Rotate(moveNormal);
+            }
+
+            if (rb.velocity.magnitude < maxSpeed)
+            {
+                rb.AddForce(move, ForceMode.Acceleration);
+            }
+
+            //look at direction of movement
+            lookAtHolder = transform.position + rb.velocity.normalized;
+            lookAtHolder.y = transform.position.y;
+            characterModel.LookAt(lookAtHolder);
         }
         if (jump && isDodging)
         {
             isDodging = false;
             HandleAirborneMovement(jump);
         }
+    }
+
+    void Rotate(Vector3 direction)
+    {
+        Vector3 y = new Vector3(0.0f, rb.velocity.y, 0.0f);
+        rb.velocity -= y;
+        rb.velocity = rb.velocity.magnitude * Vector3.Lerp(rb.velocity.normalized, direction, 0.5f);
+        rb.velocity += y;
     }
 
     //Called from User Control, calls Dash if requested while airborne
@@ -209,6 +242,9 @@ public class ThirdPersonCharacter : MonoBehaviour {
             jumpTimer = landAnimDelay;
 
             rb.velocity = new Vector3(move.x*2.0f, airJumpPower/3.0f, move.z*2.0f);
+            lookAtHolder = transform.position + rb.velocity.normalized;
+            lookAtHolder.y = transform.position.y;
+            characterModel.LookAt(lookAtHolder);
 
             PlayDashSound();
         }
@@ -281,6 +317,9 @@ public class ThirdPersonCharacter : MonoBehaviour {
         anim.SetBool("isDashing", isDashing);
 		rb.useGravity = false;
         jumpTimer = landAnimDelay;
+        lookAtHolder = transform.position + rb.velocity.normalized;
+        lookAtHolder.y = transform.position.y;
+        characterModel.LookAt(lookAtHolder);
 
         numberOfAirJumps++;
 

@@ -151,13 +151,13 @@ public class ThirdPersonUserControl : MonoBehaviour {
         }
 
         //Set player's rotation if moving and not on some sort of on-rails thing
-        if ((h != 0.0f || v != 0.0f) && !character.IsGrinding() && !character.IsHoming())
+        /*if ((h != 0.0f || v != 0.0f) && !character.IsGrinding() && !character.IsHoming())
         {
             characterRotation = cam.transform.rotation;
             characterRotation.x = 0;
             characterRotation.z = 0;
             characterModel.rotation = characterRotation;
-        }
+        }*/
 
         if (dodge)
         {
