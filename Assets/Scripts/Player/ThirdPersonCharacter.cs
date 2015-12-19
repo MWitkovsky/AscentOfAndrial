@@ -34,6 +34,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
     private Vector3 prevVelocity;
     private Vector3 moveNormal;
     private Vector3 lookAtHolder;
+    private Vector3 horizontalVelocity;
     private float origGroundCheckDistance;
 	//private float origGravityMultiplier;
     private float dashTimer;
@@ -105,27 +106,14 @@ public class ThirdPersonCharacter : MonoBehaviour {
         
         if (!isDodging && !isDashing)
         {
-            if (move.magnitude > 1.0f)
-            {
-                move.Normalize();
-            }
+            move.Normalize();
+            moveNormal = move;
 
-            anim.SetFloat("moveSpeed", move.magnitude);
-				
             move = transform.InverseTransformDirection(move);
             move = Vector3.ProjectOnPlane(move, groundNormal);
-
             move *= moveSpeedMultiplier;
-            moveNormal = move.normalized;
 
-            if (isGrounded)
-            {
-                HandleGroundedMovement(jump);
-            }
-            else
-            {
-                HandleAirborneMovement(jump);
-            }
+            horizontalVelocity = new Vector3(rb.velocity.x, 0.0f, rb.velocity.z);
 
             //Sweep test to see if moving in a direction would cause intersect with ground geometry
             RaycastHit wallCheck;
@@ -137,29 +125,27 @@ public class ThirdPersonCharacter : MonoBehaviour {
                 }
                 else
                 {
-                    //rb.velocity = new Vector3(move.x, rb.velocity.y, move.z);
-                    if (rb.velocity.magnitude < maxSpeed)
+                    if (horizontalVelocity.magnitude < maxSpeed)
                     {
                         rb.AddForce(move);
                     }
 
                     if (moveNormal != rb.velocity.normalized)
                     {
-                        Rotate(moveNormal);
+                        RotateVelocity(moveNormal);
                     }
                 }
             }
             else
-            {
-                //rb.velocity = new Vector3(move.x, rb.velocity.y, move.z);
-                if(rb.velocity.magnitude < maxSpeed)
+            {               
+                if(horizontalVelocity.magnitude < maxSpeed)
                 {
                     rb.AddForce(move);
                 }
 
                 if (moveNormal != rb.velocity.normalized)
                 {
-                    Rotate(moveNormal);
+                    RotateVelocity(moveNormal);
                 }
             }
 
@@ -168,7 +154,18 @@ public class ThirdPersonCharacter : MonoBehaviour {
             lookAtHolder.y = transform.position.y;
             characterModel.LookAt(lookAtHolder);
 
-            anim.SetFloat("moveSpeed", rb.velocity.magnitude / maxSpeed);
+            //set speed for run animation
+            anim.SetFloat("moveSpeed", rb.velocity.magnitude / 15.0f);
+
+            //now hnalde jumping
+            if (isGrounded)
+            {
+                HandleGroundedMovement(jump);
+            }
+            else
+            {
+                HandleAirborneMovement(jump);
+            }
         }
 
         if (jump && isDodging)
@@ -178,23 +175,25 @@ public class ThirdPersonCharacter : MonoBehaviour {
         }
     }
 
-    void Rotate(Vector3 direction)
-    {
-        
+    void RotateVelocity(Vector3 direction)
+    {       
         Vector3 y = new Vector3(0.0f, rb.velocity.y, 0.0f);
         rb.velocity -= y;
         
         if(direction == Vector3.zero && isGrounded)
         {
+            //Player let go of control stick, allows for more control over friction than buggy physmaterials
             rb.velocity = rb.velocity.normalized * Mathf.Lerp(rb.velocity.magnitude, 0.0f, decelerationSpeed * Time.fixedDeltaTime);
         }
         else if (rb.velocity.magnitude > 1.0f && direction != Vector3.zero)
         {
+            //Rotates current velocity towards the desired direction if different
             rb.velocity = rb.velocity.magnitude * Vector3.Lerp(rb.velocity.normalized, direction, rotateSpeed * Time.fixedDeltaTime);
         }
 
         if(rb.velocity.magnitude > maxSpeed)
         {
+            //Allows player to break max speed due to external influences, but pushes them back to max speed (more aggressively when further above max speed)
             rb.velocity = rb.velocity.normalized * Mathf.Lerp(rb.velocity.magnitude, maxSpeed, decelerationSpeed * Time.fixedDeltaTime);
         }
 
