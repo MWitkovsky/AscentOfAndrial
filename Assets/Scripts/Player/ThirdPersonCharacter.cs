@@ -176,7 +176,8 @@ public class ThirdPersonCharacter : MonoBehaviour {
     }
 
     void RotateVelocity(Vector3 direction)
-    {       
+    {
+        //We're ignoring y component of velocity
         Vector3 y = new Vector3(0.0f, rb.velocity.y, 0.0f);
         rb.velocity -= y;
         
