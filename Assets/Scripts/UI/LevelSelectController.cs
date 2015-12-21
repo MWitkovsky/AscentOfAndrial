@@ -3,7 +3,8 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class LevelSelectController : MonoBehaviour {
-	
+
+    public LoadingScreenHandler loadingScreen;
 	public Button buttonMV;
 	public Button buttonIC;
 	public Button buttonAF;
@@ -55,14 +56,14 @@ public class LevelSelectController : MonoBehaviour {
 	//Loads the selected level
 	void goToLevel(int levelOffset)
 	{
-		Application.LoadLevel(Application.loadedLevel + levelOffset);
+		loadingScreen.loadLevel(Application.loadedLevel + levelOffset);
 	}
 
 	
 	//Goes back to the main menu
 	void returnTop()
 	{
-		Application.LoadLevel(Application.loadedLevel - 1);
+		Application.LoadLevel(Application.loadedLevel);
 	}
 }
 

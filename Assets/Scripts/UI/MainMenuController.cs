@@ -4,10 +4,11 @@ using System.Collections;
 
 public class MainMenuController : MonoBehaviour {
 
-public Button startButton;
-public Button levelButton;
-public Button exitButton;
-public GameController gameController;
+    public LoadingScreenHandler loadingScreen;
+    public Button startButton;
+    public Button levelButton;
+    public Button exitButton;
+    public GameController gameController;
 
 	// Use this for initialization
 	void Start ()
@@ -32,8 +33,9 @@ public GameController gameController;
 	//Loads the first level.
 	void startGame()
 	{
-		Application.LoadLevel(Application.loadedLevel + 2);
-	}
+        loadingScreen.loadLevel(Application.loadedLevel + 2);
+        //Application.LoadLevel(Application.loadedLevel + 2);
+    }
 
 	void switchToLevelMenu()
 	{

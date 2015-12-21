@@ -6,6 +6,7 @@ using UnityStandardAssets.CrossPlatformInput;
 public class TextboxHandler : MonoBehaviour
 {
     public ThirdPersonCharacter player;
+    public LoadingScreenHandler loadingScreen;
     public MusicHandler musicHandler;
     public AudioClip textSound;
     public Image screenOverlay, textboxBackground, characterPortrait;
@@ -77,11 +78,11 @@ public class TextboxHandler : MonoBehaviour
                 {
                     if(Application.loadedLevel + 1 >= Application.levelCount)
                     {
-                        Application.LoadLevel(0);
+                        loadingScreen.loadLevel(0);
                     }
                     else
                     {
-                        Application.LoadLevel(Application.loadedLevel + 1);
+                        loadingScreen.loadLevel(Application.loadedLevel + 1);
                     }
                 }
             }
