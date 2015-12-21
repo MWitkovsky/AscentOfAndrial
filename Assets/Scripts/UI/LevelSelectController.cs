@@ -63,7 +63,7 @@ public class LevelSelectController : MonoBehaviour {
 	//Goes back to the main menu
 	void returnTop()
 	{
-		Application.LoadLevel(Application.loadedLevel);
+		Application.LoadLevel(Application.loadedLevel - 1);
 	}
 }
 
