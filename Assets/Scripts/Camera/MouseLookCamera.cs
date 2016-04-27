@@ -6,6 +6,7 @@ public class MouseLookCamera : MonoBehaviour
 {
     public ThirdPersonCharacter player;
     public Transform target;
+    public Transform aimTarget;
     public float xSpeed;
     public float ySpeed;
     public float yMinLimit;
@@ -17,7 +18,8 @@ public class MouseLookCamera : MonoBehaviour
     private Rigidbody playerRb;
     private Vector3 distanceVector;
     private float x, y;
-    private float distance, velModifier, finalDistance, blockedDistance;
+    private float distance, aimDistance, velModifier, finalDistance, finalAimDistance, blockedDistance;
+    private bool aiming;
 
 
     void Start()
@@ -28,6 +30,8 @@ public class MouseLookCamera : MonoBehaviour
 
         distance = (minDistance + maxDistance) / 2.0f;
         finalDistance = distance;
+
+        aimDistance = 0.0f;
 
         distanceVector.y = -0.5f;
 
@@ -40,68 +44,85 @@ public class MouseLookCamera : MonoBehaviour
         playerRb = player.GetComponent<Rigidbody>();
     }
 
+    void Update()
+    {
+        aiming = Input.GetButton("Fire2");
+    }
+
     void LateUpdate()
     {
         if (target)
         {
-            //Zoom
-            if (Input.GetAxis("Mouse ScrollWheel") > 0) //forwards
-            {
-                if (distance > minDistance)
-                {
-                    distance -= 0.5f;
-                }
-
-            }
-            else if (Input.GetAxis("Mouse ScrollWheel") < 0) // backwards
-            {
-                if (distance < maxDistance)
-                {
-                    distance += 0.5f;
-                }
-            }
-
             //Rotation
             x += Input.GetAxis("Mouse X") * xSpeed * Time.deltaTime;
             y -= Input.GetAxis("Mouse Y") * ySpeed * Time.deltaTime;
 
             y = ClampAngle(y, yMinLimit, yMaxLimit);
 
-            velModifier = playerRb.velocity.magnitude * 0.333f;
-
             Quaternion rotation = Quaternion.Euler(y, x, 0);
             transform.rotation = rotation;
 
-            if (!wallCheck.HitSomething())
+            //Aim mode when right click held
+            if (aiming)
             {
-                if (distance + velModifier < finalDistance)
-                {
-                    finalDistance = Mathf.Lerp(finalDistance, distance + velModifier, 2.0f * Time.deltaTime);
-                }
-                else
-                {
-                    finalDistance = Mathf.Lerp(finalDistance, distance + velModifier, 0.5f * Time.deltaTime);
-                }
-
+                finalDistance = Mathf.Lerp(finalDistance, aimDistance, 2.0f * Time.deltaTime);
+                Debug.Log(finalDistance);
                 distanceVector.z = -(finalDistance);
-                Vector3 position = rotation * distanceVector + target.position;
+                Vector3 position = rotation * distanceVector + aimTarget.position;
                 transform.position = position;
             }
-            /*else
+            else
             {
-                if (distance + velModifier < finalDistance)
+                //Zoom
+                if (Input.GetAxis("Mouse ScrollWheel") > 0) //forwards
                 {
-                    finalDistance = Mathf.Lerp(finalDistance, distance + velModifier, 2.0f * Time.deltaTime);
+                    if (distance > minDistance)
+                    {
+                        distance -= 0.5f;
+                    }
+
                 }
-                else
+                else if (Input.GetAxis("Mouse ScrollWheel") < 0) // backwards
                 {
-                    finalDistance = Mathf.Lerp(finalDistance, distance + velModifier, 0.5f * Time.deltaTime);
+                    if (distance < maxDistance)
+                    {
+                        distance += 0.5f;
+                    }
                 }
 
-                distanceVector.z = -(finalDistance);
-                Vector3 position = rotation * distanceVector + target.position;
-                transform.position = position;
-            }*/
+                velModifier = playerRb.velocity.magnitude * 0.333f;
+
+                if (!wallCheck.HitSomething())
+                {
+                    if (distance + velModifier < finalDistance)
+                    {
+                        finalDistance = Mathf.Lerp(finalDistance, distance + velModifier, 2.0f * Time.deltaTime);
+                    }
+                    else
+                    {
+                        finalDistance = Mathf.Lerp(finalDistance, distance + velModifier, 0.5f * Time.deltaTime);
+                    }
+
+                    distanceVector.z = -(finalDistance);
+                    Vector3 position = rotation * distanceVector + target.position;
+                    transform.position = position;
+                }
+                /*else
+                {
+                    if (distance + velModifier < finalDistance)
+                    {
+                        finalDistance = Mathf.Lerp(finalDistance, distance + velModifier, 2.0f * Time.deltaTime);
+                    }
+                    else
+                    {
+                        finalDistance = Mathf.Lerp(finalDistance, distance + velModifier, 0.5f * Time.deltaTime);
+                    }
+
+                    distanceVector.z = -(finalDistance);
+                    Vector3 position = rotation * distanceVector + target.position;
+                    transform.position = position;
+                }*/
+            }
         }
     }
 

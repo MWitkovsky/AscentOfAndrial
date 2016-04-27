@@ -150,9 +150,12 @@ public class ThirdPersonCharacter : MonoBehaviour {
             }
 
             //look at direction of movement
-            lookAtHolder = transform.position + rb.velocity.normalized;
-            lookAtHolder.y = transform.position.y;
-            characterModel.LookAt(lookAtHolder);
+            if(rb.velocity.magnitude > 0.1f)
+            {
+                lookAtHolder = transform.position + rb.velocity.normalized;
+                lookAtHolder.y = transform.position.y;
+                characterModel.LookAt(lookAtHolder);
+            }
 
             //set speed for run animation
             anim.SetFloat("moveSpeed", rb.velocity.magnitude / 15.0f);

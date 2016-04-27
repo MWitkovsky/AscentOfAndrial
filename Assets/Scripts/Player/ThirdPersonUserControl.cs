@@ -103,12 +103,14 @@ public class ThirdPersonUserControl : MonoBehaviour {
 
         if (CrossPlatformInputManager.GetButtonDown("Fire1"))
         {
-            character.AirAttack();
-        }
-
-        if (CrossPlatformInputManager.GetButtonDown("Fire2"))
-        {
-            character.CastSpell(cam.position, cam.forward, characterModel);
+            if (CrossPlatformInputManager.GetButton("Fire2"))
+            {
+                character.CastSpell(cam.position, cam.forward, characterModel);
+            }
+            else
+            {
+                character.AirAttack();
+            }  
         }
 
         //Selecting which spell is being readied
