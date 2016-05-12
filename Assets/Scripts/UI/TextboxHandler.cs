@@ -80,6 +80,11 @@ public class TextboxHandler : MonoBehaviour
                     {
                         loadingScreen.loadLevel(0);
                     }
+
+                    else if(Application.loadedLevel == 6)
+                    {
+                        loadingScreen.loadLevel(0);
+                    }
                     else
                     {
                         loadingScreen.loadLevel(Application.loadedLevel + 1);

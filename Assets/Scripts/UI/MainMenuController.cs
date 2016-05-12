@@ -8,6 +8,7 @@ public class MainMenuController : MonoBehaviour {
     public Button startButton;
     public Button levelButton;
     public Button exitButton;
+    public Button prologueButton;
     public GameController gameController;
 
 	// Use this for initialization
@@ -25,6 +26,10 @@ public class MainMenuController : MonoBehaviour {
 		Button.ButtonClickedEvent exitEvent = new Button.ButtonClickedEvent();
 		exitEvent.AddListener(exitGame);
 		exitButton.onClick = exitEvent;
+
+        Button.ButtonClickedEvent prologueEvent = new Button.ButtonClickedEvent();
+        prologueEvent.AddListener(startPrologue);
+        prologueButton.onClick = prologueEvent;
 
 	    gameController.SetCursorMode(CursorLockMode.None);
         gameController.SetIsMenu(true);
@@ -48,4 +53,10 @@ public class MainMenuController : MonoBehaviour {
 	{
 		Application.Quit();
 	}
+
+    //Goes directly to the prologue stage
+    void startPrologue()
+    {
+        Application.LoadLevel(7);
+    }
 }
