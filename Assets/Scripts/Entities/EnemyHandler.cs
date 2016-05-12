@@ -13,6 +13,7 @@ public class EnemyHandler : MonoBehaviour {
     private Vector3 originalPosition;
     private float damageTimer, damageDelay;
     private bool wobbleUp;
+    public bool isMetallic = false;
 
 	void Start () {
         originalPosition = transform.position;
@@ -55,15 +56,21 @@ public class EnemyHandler : MonoBehaviour {
     {
         if (other.gameObject.CompareTag("Spell"))
         {
-            Kill();
+            if (!isMetallic)
+            {
+                Kill();
+            }
         }
         if (other.gameObject.CompareTag("Player") && damageTimer <= 0.0f)
         {
             ThirdPersonCharacter player = other.gameObject.GetComponent<ThirdPersonCharacter>();
             if (!player.IsHoming() && player.isVulnerable())
             {
-                player.healthBar.applyDamage(20);
-                player.Hit(-other.gameObject.GetComponent<ThirdPersonUserControl>().characterModel.transform.forward); //lol
+                if (!isMetallic)
+                {
+                    player.healthBar.applyDamage(20);
+                    player.Hit(-other.gameObject.GetComponent<ThirdPersonUserControl>().characterModel.transform.forward); //lol
+                }
                 damageTimer = damageDelay;
             }
         }
@@ -72,12 +79,14 @@ public class EnemyHandler : MonoBehaviour {
     //Kills the enemy, causing physics to start
     public void Kill()
     {
-        lookAtBoundary.enabled = false;
-        col.isTrigger = false;
-        rb.useGravity = true;
-        rb.isKinematic = false;
-        gameObject.layer = LayerMask.NameToLayer("Corpses");
-
+        if (!isMetallic)
+        {
+            lookAtBoundary.enabled = false;
+            col.isTrigger = false;
+            rb.useGravity = true;
+            rb.isKinematic = false;
+            gameObject.layer = LayerMask.NameToLayer("Corpses");
+        }
         source.Play();
     }
 }
