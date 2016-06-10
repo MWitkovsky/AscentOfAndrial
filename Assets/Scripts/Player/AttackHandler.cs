@@ -42,6 +42,8 @@ public class AttackHandler : MonoBehaviour {
 
                 if (enemy)
                 {
+                    ParticleSystem[] ps = player.GetComponentsInChildren<ParticleSystem>();
+                    ps[0].Play();
                     enemy.Kill();
                     enemy = null;
                 }

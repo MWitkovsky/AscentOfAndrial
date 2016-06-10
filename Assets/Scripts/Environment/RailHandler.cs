@@ -74,7 +74,8 @@ public class RailHandler : MonoBehaviour {
     void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Player")){
-			other.GetComponentInChildren<ParticleSystem>().Play();
+            ParticleSystem[] ps = other.GetComponentsInChildren<ParticleSystem>();
+            ps[1].Play();
             player = other.GetComponent<ThirdPersonCharacter>();
             playerRB = other.GetComponent<Rigidbody>();
             if (player.GetJumpTimer() < 0.0f)
@@ -126,7 +127,8 @@ public class RailHandler : MonoBehaviour {
             if (player)
             {
                 other.GetComponent<ThirdPersonCharacter>().SetGrinding(false);
-                other.GetComponentInChildren<ParticleSystem>().Stop();
+                ParticleSystem[] ps = other.GetComponentsInChildren<ParticleSystem>();
+                ps[1].Stop();
                 playerRB.useGravity = true;
 
                 player = null;
