@@ -44,6 +44,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
     private int numberOfAirJumps;
     private int textboxReadDelay;
     private int groundCheckDelay;
+    private int airAttackStage;
     private bool isFrozen;
     private bool isTextboxOpen;
     private bool isGrounded;
@@ -334,8 +335,14 @@ public class ThirdPersonCharacter : MonoBehaviour {
     {
         if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Slash") && !isHit && !isGrounded)
         {
-            anim.SetTrigger("AirAttackSwipe");
+            if(airAttackStage % 3 != 0)
+                anim.SetTrigger("AirAttackSwipe");
+
+            if(airAttackStage %3 == 0)
+                anim.SetTrigger("AirAttackSlicer");
             attackRadius.enabled = true;
+
+            airAttackStage++;
         }
     }
 
@@ -454,7 +461,7 @@ public class ThirdPersonCharacter : MonoBehaviour {
                 isDodging = false;
                 isHit = false;
                 numberOfAirJumps = 0;
-
+                airAttackStage = 0;
                 if (shouldDie)
                 {
                     dead = true;
