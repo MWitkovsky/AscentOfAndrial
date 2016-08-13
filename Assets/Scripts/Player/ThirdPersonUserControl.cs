@@ -109,6 +109,7 @@ public class ThirdPersonUserControl : MonoBehaviour {
             }
             else
             {
+                character.GroundAttack();
                 character.AirAttack();
             }  
         }

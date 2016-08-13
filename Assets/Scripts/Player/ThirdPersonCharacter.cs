@@ -339,6 +339,15 @@ public class ThirdPersonCharacter : MonoBehaviour {
         }
     }
 
+    public void GroundAttack()
+    {
+        if (!anim.GetCurrentAnimatorStateInfo(0).IsName("Slash") && !isHit && isGrounded)
+        {
+            anim.SetTrigger("GroundAttackSwipe");
+            attackRadius.enabled = true;
+        }
+    }
+
     public void CastSpell(Vector3 position, Vector3 direction, Transform characterModel)
     {
         if(castTimer < 0.0f)
