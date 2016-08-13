@@ -61,6 +61,16 @@ public class EnemyHandler : MonoBehaviour {
                 Kill();
             }
         }
+
+        if (other.gameObject.CompareTag("Spike"))
+        {
+            if (!isMetallic)
+            {
+                rb.AddForce(0.0f, 900.0f, 0.0f);
+                Hookify();
+            }
+        }
+
         if (other.gameObject.CompareTag("Player") && damageTimer <= 0.0f)
         {
             ThirdPersonCharacter player = other.gameObject.GetComponent<ThirdPersonCharacter>();
@@ -86,6 +96,21 @@ public class EnemyHandler : MonoBehaviour {
             rb.useGravity = true;
             rb.isKinematic = false;
             gameObject.layer = LayerMask.NameToLayer("Corpses");
+        }
+        source.Play();
+    }
+
+    //Kills the enemy, causing physics to start
+    public void Hookify()
+    {
+        if (!isMetallic)
+        {
+            lookAtBoundary.enabled = false;
+            col.isTrigger = false;
+            rb.useGravity = true;
+            rb.isKinematic = false;
+            gameObject.tag = "Hook";
+            //gameObject.layer = LayerMask.NameToLayer("Corpses");
         }
         source.Play();
     }
