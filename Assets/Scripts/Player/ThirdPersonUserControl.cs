@@ -50,16 +50,16 @@ public class ThirdPersonUserControl : MonoBehaviour {
 
         if (!dodge)
         {
-            if (Input.GetKeyDown(KeyCode.LeftShift))
+            if (CrossPlatformInputManager.GetButtonDown("Fire3"))
             {
-                if (Input.GetKey(KeyCode.W)) //Forward
+                if (CrossPlatformInputManager.GetAxis("Vertical") > 0.0f) //Forward
                 {
                     dodge = true;
-                    if (Input.GetKey(KeyCode.D))
+                    if (CrossPlatformInputManager.GetAxis("Horizontal") > 0.0f)
                     {
                         dodgeDirection = Direction.FR;
                     }
-                    else if (Input.GetKey(KeyCode.A))
+                    else if (CrossPlatformInputManager.GetAxis("Horizontal") < 0.0f)
                     {
                         dodgeDirection = Direction.FL;
                     }
@@ -69,14 +69,14 @@ public class ThirdPersonUserControl : MonoBehaviour {
 						character.ChangeDashDir(dodgeDirection);
                     }
                 }
-                else if (Input.GetKey(KeyCode.S)) //Backward
+                else if (CrossPlatformInputManager.GetAxis("Vertical") < 0.0f) //Backward
                 {
                     dodge = true;
-                    if (Input.GetKey(KeyCode.D))
+                    if (CrossPlatformInputManager.GetAxis("Horizontal") > 0.0f)
                     {
                         dodgeDirection = Direction.BR;
                     }
-                    else if (Input.GetKey(KeyCode.A))
+                    else if (CrossPlatformInputManager.GetAxis("Horizontal") < 0.0f)
                     {
                         dodgeDirection = Direction.BL;
                     }
@@ -86,13 +86,13 @@ public class ThirdPersonUserControl : MonoBehaviour {
 						character.ChangeDashDir(dodgeDirection);
                     }
                 }
-                else if (Input.GetKey(KeyCode.A)) //Left
+                else if (CrossPlatformInputManager.GetAxis("Horizontal") < 0.0f) //Left
                 {
                     dodge = true;
                     dodgeDirection = Direction.Left;
 					character.ChangeDashDir(dodgeDirection);
                 }
-                else if (Input.GetKey(KeyCode.D)) //Right
+                else if (CrossPlatformInputManager.GetAxis("Horizontal") > 0.0f) //Right
                 {
                     dodge = true;
                     dodgeDirection = Direction.Right;
