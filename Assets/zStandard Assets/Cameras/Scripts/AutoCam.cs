@@ -4,6 +4,9 @@ using UnityEngine;
 
 #endif
 
+//Code source:
+//https://github.com/Gweylorth/LOG4715-CrashCourse/blob/master/Assets/Sample%20Assets/Cameras/Scripts/AutoCam.cs
+
 namespace UnityStandardAssets.Cameras
 {
     [ExecuteInEditMode]
