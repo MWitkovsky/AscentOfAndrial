@@ -5,13 +5,13 @@ using UnityStandardAssets.Cameras;
 public class ThirdPersonMouseCamera : MonoBehaviour
 {
     public Transform target;
-    public float xSpeed, ySpeed;
-    public float yMinLimit, yMaxLimit;
-    public float minDistance, maxDistance;
+    public float xSpeed = 250.0f, ySpeed = 120.0f;
+    public float yMinLimit = -50.0f, yMaxLimit = 50.0f;
+    public float minDistance = -3.5f, maxDistance = 10.0f;
 
     private Vector3 distanceVector;
     private float x, y;
-    private float distance, finalDistance, finalAimDistance;
+    private float distance, finalDistance;
 
 
     void Start()
